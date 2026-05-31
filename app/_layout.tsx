@@ -2,6 +2,8 @@ import { DarkTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import DiamondLogo from '../components/DiamondLogo';
+import { Colors } from '../constants/colors';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -23,7 +25,7 @@ export default function RootLayout() {
         <Stack.Screen
           name="result"
           options={{
-            title: 'AML Analysis',
+            headerTitle: () => <DiamondLogo size="sm" showLabel />,
             headerBackTitle: 'Back',
             presentation: 'card',
           }}

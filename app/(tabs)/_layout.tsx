@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
-import { Platform, Text } from 'react-native';
+import { Platform, Text, View } from 'react-native';
+import DiamondLogo from '../../components/DiamondLogo';
 import { Colors } from '../../constants/colors';
 
 export default function TabLayout() {
@@ -24,8 +25,9 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'AML Checker',
+          headerTitle: () => <DiamondLogo size="sm" showLabel />,
           tabBarLabel: 'Checker',
-          tabBarIcon: () => <Text style={{ fontSize: 18 }}>🔍</Text>,
+          tabBarIcon: () => <DiamondLogo size="sm" />,
         }}
       />
       <Tabs.Screen
@@ -33,7 +35,7 @@ export default function TabLayout() {
         options={{
           title: 'History',
           tabBarLabel: 'History',
-          tabBarIcon: () => <Text style={{ fontSize: 18 }}>📋</Text>,
+          tabBarIcon: ({ color }) => <Text style={{ fontSize: 18 }}>📋</Text>,
         }}
       />
       <Tabs.Screen
@@ -41,7 +43,7 @@ export default function TabLayout() {
         options={{
           title: 'About',
           tabBarLabel: 'About',
-          tabBarIcon: () => <Text style={{ fontSize: 18 }}>ℹ</Text>,
+          tabBarIcon: ({ color }) => <Text style={{ fontSize: 18 }}>ℹ</Text>,
         }}
       />
     </Tabs>

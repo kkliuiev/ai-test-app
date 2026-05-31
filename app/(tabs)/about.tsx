@@ -1,5 +1,6 @@
 import React from 'react';
 import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import DiamondLogo from '../../components/DiamondLogo';
 import { Colors } from '../../constants/colors';
 
 const RISK_LEVELS = [
@@ -24,13 +25,8 @@ export default function AboutScreen() {
 
       {/* Brand header */}
       <View style={styles.brandRow}>
-        <View style={styles.logoBadge}>
-          <Text style={styles.logoIcon}>◆</Text>
-        </View>
-        <View>
-          <Text style={styles.appName}>AML Check</Text>
-          <Text style={styles.version}>Crypto Risk Analyzer · v1.0.0</Text>
-        </View>
+        <DiamondLogo size="lg" showLabel />
+        <Text style={styles.version}>v1.0.0</Text>
       </View>
 
       <Text style={styles.description}>
@@ -108,16 +104,8 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
   content: { padding: 20, paddingBottom: 48 },
 
-  brandRow: { flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 16 },
-  logoBadge: {
-    width: 52, height: 52, borderRadius: 14,
-    backgroundColor: Colors.bgHighlight,
-    borderWidth: 1, borderColor: Colors.primaryLight,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  logoIcon: { fontSize: 22, color: Colors.primaryLight },
-  appName: { fontSize: 20, fontWeight: '800', color: Colors.textPrimary },
-  version: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
+  brandRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
+  version: { fontSize: 12, color: Colors.textMuted },
 
   description: { fontSize: 14, color: Colors.textSecondary, lineHeight: 22, marginBottom: 28 },
 

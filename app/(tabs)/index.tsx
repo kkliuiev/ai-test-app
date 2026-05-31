@@ -14,6 +14,7 @@ import {
   View,
 } from 'react-native';
 import ChainSelector from '../../components/ChainSelector';
+import DiamondLogo from '../../components/DiamondLogo';
 import InfoBanner from '../../components/InfoBanner';
 import { Colors } from '../../constants/colors';
 import { SUPPORTED_CHAINS } from '../../constants/chains';
@@ -82,15 +83,7 @@ export default function CheckerScreen() {
 
         {/* Header */}
         <View style={styles.hero}>
-          <View style={styles.logoRow}>
-            <View style={styles.logoBadge}>
-              <Text style={styles.logoText}>◆</Text>
-            </View>
-            <View>
-              <Text style={styles.brandName}>AML Check</Text>
-              <Text style={styles.brandTagline}>Crypto Risk Analyzer</Text>
-            </View>
-          </View>
+          <DiamondLogo size="lg" showLabel />
           <Text style={styles.heroDesc}>
             Analyze blockchain addresses for sanctions, money laundering, phishing, and 17 other risk indicators.
           </Text>
@@ -175,21 +168,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
   content: { padding: 20, paddingBottom: 40 },
 
-  hero: { paddingVertical: 28 },
-  logoRow: { flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 16 },
-  logoBadge: {
-    width: 52,
-    height: 52,
-    borderRadius: 14,
-    backgroundColor: Colors.bgHighlight,
-    borderWidth: 1,
-    borderColor: Colors.primaryLight,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoText: { fontSize: 24, color: Colors.primaryLight },
-  brandName: { fontSize: 22, fontWeight: '800', color: Colors.textPrimary },
-  brandTagline: { fontSize: 13, color: Colors.textAccent, marginTop: 2 },
+  hero: { paddingVertical: 28, gap: 16 },
   heroDesc: { fontSize: 14, color: Colors.textSecondary, lineHeight: 21 },
 
   card: {
