@@ -52,7 +52,7 @@ export interface GoPlusAddressData {
 export interface GoPlusAddressResponse {
   code: number;
   message: string;
-  result: Record<string, GoPlusAddressData>;
+  result: GoPlusAddressData;
 }
 
 export interface HistoryItem extends AmlCheckResult {
