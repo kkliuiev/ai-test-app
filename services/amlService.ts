@@ -53,10 +53,9 @@ export async function checkAddress(
     throw new Error(data.message || 'API returned an error');
   }
 
-  const addressLower = address.toLowerCase();
-  const addressData = data.result[addressLower] || data.result[address];
+  const addressData = data.result;
 
-  if (!addressData) {
+  if (!addressData || Object.keys(addressData).length === 0) {
     throw new Error('No data returned for this address on the selected chain');
   }
 
