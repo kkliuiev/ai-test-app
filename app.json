@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Crypto AML Checker",
+    "name": "AML Check",
     "slug": "crypto-aml-checker",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0f0f1a"
+      "backgroundColor": "#0B0F1C"
     },
     "ios": {
       "supportsTablet": true,

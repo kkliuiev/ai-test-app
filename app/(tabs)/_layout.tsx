@@ -1,21 +1,23 @@
 import { Tabs } from 'expo-router';
-import { Platform } from 'react-native';
+import { Platform, Text } from 'react-native';
+import { Colors } from '../../constants/colors';
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#7B68EE',
-        tabBarInactiveTintColor: '#636374',
+        tabBarActiveTintColor: Colors.primaryLight,
+        tabBarInactiveTintColor: Colors.textMuted,
         tabBarStyle: {
-          backgroundColor: '#16162A',
-          borderTopColor: '#2C2C3E',
+          backgroundColor: Colors.bgCard,
+          borderTopColor: Colors.border,
           height: Platform.OS === 'ios' ? 88 : 64,
           paddingBottom: Platform.OS === 'ios' ? 28 : 10,
         },
-        headerStyle: { backgroundColor: '#0f0f1a' },
-        headerTintColor: '#FFFFFF',
+        headerStyle: { backgroundColor: Colors.bg },
+        headerTintColor: Colors.textPrimary,
         headerShadowVisible: false,
+        headerTitleStyle: { fontWeight: '700' },
       }}
     >
       <Tabs.Screen
@@ -23,9 +25,7 @@ export default function TabLayout() {
         options={{
           title: 'AML Checker',
           tabBarLabel: 'Checker',
-          tabBarIcon: ({ color, size }) => (
-            <TabIcon label="🔍" size={size} />
-          ),
+          tabBarIcon: () => <Text style={{ fontSize: 18 }}>🔍</Text>,
         }}
       />
       <Tabs.Screen
@@ -33,9 +33,7 @@ export default function TabLayout() {
         options={{
           title: 'History',
           tabBarLabel: 'History',
-          tabBarIcon: ({ color, size }) => (
-            <TabIcon label="📋" size={size} />
-          ),
+          tabBarIcon: () => <Text style={{ fontSize: 18 }}>📋</Text>,
         }}
       />
       <Tabs.Screen
@@ -43,16 +41,9 @@ export default function TabLayout() {
         options={{
           title: 'About',
           tabBarLabel: 'About',
-          tabBarIcon: ({ color, size }) => (
-            <TabIcon label="ℹ" size={size} />
-          ),
+          tabBarIcon: () => <Text style={{ fontSize: 18 }}>ℹ</Text>,
         }}
       />
     </Tabs>
   );
-}
-
-function TabIcon({ label, size }: { label: string; size: number }) {
-  const { Text } = require('react-native');
-  return <Text style={{ fontSize: size - 4 }}>{label}</Text>;
 }
