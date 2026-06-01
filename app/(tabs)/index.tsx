@@ -1,229 +1,255 @@
-import * as Clipboard from 'expo-clipboard';
-import * as Haptics from 'expo-haptics';
 import { router } from 'expo-router';
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
   Platform,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import ChainSelector from '../../components/ChainSelector';
 import DiamondLogo from '../../components/DiamondLogo';
-import InfoBanner from '../../components/InfoBanner';
 import { Colors } from '../../constants/colors';
-import { SUPPORTED_CHAINS } from '../../constants/chains';
-import { checkAddress, isValidAddress } from '../../services/amlService';
-import { saveToHistory } from '../../services/historyService';
-import { AmlCheckResult, Chain } from '../../types';
+import { useAuth } from '../../context/AuthContext';
 
-const DEMO_ADDRESSES = [
-  { label: 'Known Phisher', address: '0xd882cfc20f52f2599d84b8e8d58c7fb62cfe344b' },
-  { label: 'Safe Address', address: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F' },
-  { label: 'Mixer Related', address: '0x8576aCC5C05D6Ce88f4e49bf65BdF0C62F91353C' },
+const SERVICE_CARDS = [
+  {
+    icon: '🔍',
+    iconBg: '#EDE9FE',
+    title: 'AML Check',
+    subtitle: 'Screen any address',
+    route: '/check' as const,
+  },
+  {
+    icon: '🕐',
+    iconBg: '#DBEAFE',
+    title: 'History',
+    subtitle: 'Your past checks',
+    route: '/(tabs)/history' as const,
+  },
+  {
+    icon: 'ℹ',
+    iconBg: '#D1FAE5',
+    title: 'About',
+    subtitle: 'Risk score guide',
+    route: '/(tabs)/about' as const,
+  },
+  {
+    icon: '⛓',
+    iconBg: '#FCE7F3',
+    title: 'Networks',
+    subtitle: '6 chains supported',
+    route: '/check' as const,
+  },
 ];
 
-export default function CheckerScreen() {
-  const [address, setAddress] = useState('');
-  const [selectedChain, setSelectedChain] = useState<Chain>(SUPPORTED_CHAINS[0]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const inputRef = useRef<TextInput>(null);
-
-  const handlePaste = async () => {
-    try {
-      const text = await Clipboard.getStringAsync();
-      if (text) { setAddress(text.trim()); setError(null); }
-    } catch {}
-  };
-
-  const handleClear = () => {
-    setAddress(''); setError(null); inputRef.current?.focus();
-  };
-
-  const handleCheck = async () => {
-    const trimmed = address.trim();
-    if (!trimmed) { setError('Please enter a crypto address'); return; }
-    if (!isValidAddress(trimmed)) {
-      setError('Invalid address format. EVM addresses start with 0x followed by 40 hex characters.');
-      return;
-    }
-
-    setError(null);
-    setLoading(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-
-    try {
-      const result: AmlCheckResult = await checkAddress(trimmed, selectedChain);
-      await saveToHistory(result);
-      Haptics.notificationAsync(
-        result.riskScore > 50
-          ? Haptics.NotificationFeedbackType.Warning
-          : Haptics.NotificationFeedbackType.Success
-      );
-      router.push({ pathname: '/result', params: { data: JSON.stringify(result) } });
-    } catch (err: any) {
-      setError(err?.message ?? 'Failed to check address. Please try again.');
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const valid = address.trim().length > 0 && isValidAddress(address.trim());
+export default function HomeScreen() {
+  const { user, isGuest } = useAuth();
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView style={styles.container} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+    <SafeAreaView style={styles.safe}>
+      <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
 
-        {/* Header */}
-        <View style={styles.hero}>
-          <DiamondLogo size="lg" showLabel />
-          <Text style={styles.heroDesc}>
-            Analyze blockchain addresses for sanctions, money laundering, phishing, and 17 other risk indicators.
-          </Text>
+        {/* Top header */}
+        <View style={styles.topBar}>
+          <DiamondLogo size="md" showLabel />
+          <View style={styles.userBadge}>
+            <Text style={styles.userBadgeText}>
+              {user ? (user.email?.split('@')[0] ?? 'User') : 'Guest'}
+            </Text>
+          </View>
         </View>
 
-        {/* Check Card */}
-        <View style={styles.card}>
-          <ChainSelector selected={selectedChain} onSelect={setSelectedChain} />
-
-          <View style={styles.inputSection}>
-            <Text style={styles.inputLabel}>Wallet / Contract Address</Text>
-            <View style={[styles.inputWrapper, error ? styles.inputError : null]}>
-              <TextInput
-                ref={inputRef}
-                style={styles.input}
-                value={address}
-                onChangeText={(t) => { setAddress(t); setError(null); }}
-                placeholder="0x..."
-                placeholderTextColor={Colors.textMuted}
-                autoCapitalize="none"
-                autoCorrect={false}
-                spellCheck={false}
-                returnKeyType="done"
-                onSubmitEditing={handleCheck}
-                editable={!loading}
-              />
-              {address.length > 0 ? (
-                <TouchableOpacity onPress={handleClear} style={styles.inputBtn}>
-                  <Text style={styles.inputBtnText}>✕</Text>
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity onPress={handlePaste} style={styles.inputBtn}>
-                  <Text style={styles.pasteText}>Paste</Text>
-                </TouchableOpacity>
-              )}
-            </View>
-            {valid && <Text style={styles.validHint}>✓ Valid address format</Text>}
+        {/* Banner card */}
+        <TouchableOpacity
+          style={styles.banner}
+          onPress={() => router.push('/check')}
+          activeOpacity={0.88}
+        >
+          <View style={styles.bannerLeft}>
+            <Text style={styles.bannerStar}>✦</Text>
+            <Text style={styles.bannerTitle}>AML Risk Check</Text>
+            <Text style={styles.bannerSub}>GoPlus · 40+ sources · 6 chains</Text>
           </View>
+          <Text style={styles.bannerArrow}>→</Text>
+        </TouchableOpacity>
 
-          {error && <InfoBanner type="error" message={error} />}
+        {/* Services section */}
+        <Text style={styles.sectionLabel}>SERVICES</Text>
+        <View style={styles.grid}>
+          {SERVICE_CARDS.map((card) => (
+            <TouchableOpacity
+              key={card.title}
+              style={styles.serviceCard}
+              onPress={() => router.push(card.route as any)}
+              activeOpacity={0.8}
+            >
+              <View style={[styles.serviceIconWrap, { backgroundColor: card.iconBg }]}>
+                <Text style={styles.serviceIcon}>{card.icon}</Text>
+              </View>
+              <Text style={styles.serviceTitle}>{card.title}</Text>
+              <Text style={styles.serviceSubtitle}>{card.subtitle}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
-          <TouchableOpacity
-            style={[styles.checkBtn, (!address.trim() || loading) && styles.checkBtnDisabled]}
-            onPress={handleCheck}
-            disabled={!address.trim() || loading}
-            activeOpacity={0.85}
-          >
-            {loading
-              ? <ActivityIndicator color="#fff" size="small" />
-              : <Text style={styles.checkBtnText}>Analyze Address</Text>
-            }
+        {/* Quick nav row */}
+        <View style={styles.quickRow}>
+          <TouchableOpacity style={styles.quickBtn} onPress={() => router.push('/(tabs)/history')} activeOpacity={0.7}>
+            <Text style={styles.quickBtnText}>History</Text>
+          </TouchableOpacity>
+          <View style={styles.quickDivider} />
+          <View style={styles.quickBtn}>
+            <Text style={styles.quickBtnText} numberOfLines={1}>
+              {user ? (user.email ?? 'Account') : 'Guest'}
+            </Text>
+          </View>
+          <View style={styles.quickDivider} />
+          <TouchableOpacity style={styles.quickBtn} onPress={() => router.push('/(tabs)/about')} activeOpacity={0.7}>
+            <Text style={styles.quickBtnText}>About</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Demo addresses */}
-        <View style={styles.demoSection}>
-          <Text style={styles.demoTitle}>Try a demo address</Text>
-          <View style={styles.demoRow}>
-            {DEMO_ADDRESSES.map((d) => (
-              <TouchableOpacity
-                key={d.address}
-                style={styles.demoChip}
-                onPress={() => { setAddress(d.address); setError(null); }}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.demoChipText}>{d.label}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-
+        {/* Spacer for bottom button */}
+        <View style={{ height: 80 }} />
       </ScrollView>
-    </KeyboardAvoidingView>
+
+      {/* Sticky new check button */}
+      <View style={styles.ctaContainer}>
+        <TouchableOpacity
+          style={styles.ctaBtn}
+          onPress={() => router.push('/check')}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.ctaBtnText}>🔍  New Check</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
-  content: { padding: 20, paddingBottom: 40 },
+  safe: { flex: 1, backgroundColor: Colors.bg },
+  container: { flex: 1 },
+  content: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 20 },
 
-  hero: { paddingVertical: 28, gap: 16 },
-  heroDesc: { fontSize: 14, color: Colors.textSecondary, lineHeight: 21 },
-
-  card: {
-    backgroundColor: Colors.bgCard,
-    borderRadius: 14,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    marginBottom: 20,
-    gap: 20,
-  },
-
-  inputSection: { gap: 8 },
-  inputLabel: { fontSize: 12, color: Colors.textSecondary, letterSpacing: 0.5, textTransform: 'uppercase' },
-  inputWrapper: {
+  topBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.bgInput,
-    borderRadius: 10,
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  userBadge: {
+    backgroundColor: Colors.bgCard,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: Colors.border,
     paddingHorizontal: 14,
-    minHeight: 50,
+    paddingVertical: 7,
   },
-  inputError: { borderColor: Colors.critical },
-  input: {
-    flex: 1,
-    color: Colors.textPrimary,
-    fontSize: 14,
-    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-    paddingVertical: 12,
-    letterSpacing: 0.3,
-  },
-  inputBtn: { paddingLeft: 10, paddingVertical: 8 },
-  inputBtnText: { color: Colors.textMuted, fontSize: 13 },
-  pasteText: { color: Colors.primaryLight, fontSize: 13, fontWeight: '600' },
-  validHint: { fontSize: 12, color: Colors.low },
+  userBadgeText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '500' },
 
-  checkBtn: {
-    backgroundColor: Colors.primary,
-    borderRadius: 10,
-    paddingVertical: 15,
+  banner: {
+    backgroundColor: '#1E1B4B',
+    borderRadius: 20,
+    padding: 24,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 50,
+    justifyContent: 'space-between',
+    marginBottom: 28,
+    shadowColor: '#7C3AED',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
   },
-  checkBtnDisabled: { backgroundColor: Colors.border },
-  checkBtnText: { color: '#fff', fontSize: 15, fontWeight: '700', letterSpacing: 0.3 },
+  bannerLeft: { gap: 6 },
+  bannerStar: { fontSize: 20, color: '#D946EF' },
+  bannerTitle: { fontSize: 22, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.3 },
+  bannerSub: { fontSize: 13, color: 'rgba(255,255,255,0.55)' },
+  bannerArrow: { fontSize: 24, color: '#D946EF', fontWeight: '600' },
 
-  demoSection: { marginBottom: 20 },
-  demoTitle: { fontSize: 12, color: Colors.textMuted, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 },
-  demoRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  demoChip: {
+  sectionLabel: {
+    fontSize: 11,
+    color: Colors.textMuted,
+    fontWeight: '700',
+    letterSpacing: 1.2,
+    textTransform: 'uppercase',
+    marginBottom: 14,
+  },
+
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginBottom: 20,
+  },
+  serviceCard: {
     backgroundColor: Colors.bgCard,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    borderRadius: 16,
+    padding: 16,
+    width: '47.5%',
     borderWidth: 1,
     borderColor: Colors.border,
+    gap: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 2,
   },
-  demoChipText: { fontSize: 12, color: Colors.textSecondary },
+  serviceIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  serviceIcon: { fontSize: 20 },
+  serviceTitle: { fontSize: 15, fontWeight: '700', color: Colors.textPrimary },
+  serviceSubtitle: { fontSize: 12, color: Colors.textSecondary },
+
+  quickRow: {
+    flexDirection: 'row',
+    backgroundColor: Colors.bgCard,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    overflow: 'hidden',
+  },
+  quickBtn: {
+    flex: 1,
+    paddingVertical: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  quickBtnText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '500' },
+  quickDivider: { width: 1, backgroundColor: Colors.border, marginVertical: 10 },
+
+  ctaContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 20,
+    paddingBottom: Platform.OS === 'ios' ? 24 : 20,
+    paddingTop: 12,
+    backgroundColor: Colors.bg,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+  },
+  ctaBtn: {
+    backgroundColor: Colors.primary,
+    borderRadius: 28,
+    paddingVertical: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  ctaBtnText: { color: '#fff', fontSize: 16, fontWeight: '800', letterSpacing: 0.3 },
 });

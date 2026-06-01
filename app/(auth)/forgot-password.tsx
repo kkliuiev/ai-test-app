@@ -33,11 +33,13 @@ export default function ForgotPasswordScreen() {
   if (sent) {
     return (
       <View style={styles.centeredContainer}>
-        <Text style={styles.successIcon}>📧</Text>
+        <View style={styles.successIconWrap}>
+          <Text style={styles.successIcon}>📧</Text>
+        </View>
         <Text style={styles.successTitle}>Reset link sent</Text>
         <Text style={styles.successDesc}>
           Check your inbox at{'\n'}
-          <Text style={{ color: Colors.primaryLight }}>{email}</Text>
+          <Text style={{ color: Colors.primary, fontWeight: '700' }}>{email}</Text>
         </Text>
         <Link href="/(auth)/login" asChild>
           <TouchableOpacity style={styles.backBtn}>
@@ -51,6 +53,11 @@ export default function ForgotPasswordScreen() {
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.container}>
+        <View style={styles.iconRow}>
+          <View style={styles.iconWrap}>
+            <Text style={styles.iconEmoji}>🔑</Text>
+          </View>
+        </View>
         <Text style={styles.title}>Forgot Password</Text>
         <Text style={styles.subtitle}>
           Enter your email and we'll send you a link to reset your password.
@@ -59,7 +66,7 @@ export default function ForgotPasswordScreen() {
         {error && <InfoBanner type="error" message={error} />}
 
         <View style={styles.field}>
-          <Text style={styles.label}>Email</Text>
+          <Text style={styles.label}>EMAIL</Text>
           <TextInput
             style={styles.input}
             value={email}
@@ -96,36 +103,97 @@ export default function ForgotPasswordScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg, padding: 24, paddingTop: 60, gap: 16 },
-  title: { fontSize: 24, fontWeight: '800', color: Colors.textPrimary },
+  container: {
+    flex: 1,
+    backgroundColor: Colors.bg,
+    padding: 24,
+    paddingTop: 60,
+    gap: 16,
+  },
+  iconRow: { alignItems: 'center', marginBottom: 8 },
+  iconWrap: {
+    width: 72,
+    height: 72,
+    borderRadius: 18,
+    backgroundColor: '#EDE9FE',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconEmoji: { fontSize: 32 },
+  title: { fontSize: 26, fontWeight: '800', color: Colors.textPrimary },
   subtitle: { fontSize: 14, color: Colors.textSecondary, lineHeight: 21 },
   field: { gap: 8 },
-  label: { fontSize: 12, color: Colors.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5 },
+  label: {
+    fontSize: 11,
+    color: Colors.textMuted,
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+    fontWeight: '600',
+  },
   input: {
-    backgroundColor: Colors.bgInput, borderRadius: 10, borderWidth: 1,
-    borderColor: Colors.border, paddingHorizontal: 14, paddingVertical: 13,
-    color: Colors.textPrimary, fontSize: 15,
+    backgroundColor: Colors.bgCard,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    color: Colors.textPrimary,
+    fontSize: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 1,
   },
   primaryBtn: {
-    backgroundColor: Colors.primary, borderRadius: 10,
-    paddingVertical: 15, alignItems: 'center', minHeight: 50, justifyContent: 'center',
+    backgroundColor: Colors.primary,
+    borderRadius: 28,
+    paddingVertical: 16,
+    alignItems: 'center',
+    minHeight: 52,
+    justifyContent: 'center',
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
-  btnDisabled: { backgroundColor: Colors.border },
-  primaryBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
+  btnDisabled: { backgroundColor: Colors.border, shadowOpacity: 0 },
+  primaryBtnText: { color: '#fff', fontSize: 16, fontWeight: '800' },
   backLink: { alignItems: 'center', paddingVertical: 8 },
-  backLinkText: { color: Colors.primaryLight, fontSize: 14 },
+  backLinkText: { color: Colors.primary, fontSize: 14, fontWeight: '600' },
 
   centeredContainer: {
-    flex: 1, backgroundColor: Colors.bg,
-    alignItems: 'center', justifyContent: 'center',
-    padding: 40, gap: 14,
+    flex: 1,
+    backgroundColor: Colors.bg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 40,
+    gap: 14,
   },
-  successIcon: { fontSize: 48, marginBottom: 8 },
-  successTitle: { fontSize: 22, fontWeight: '800', color: Colors.textPrimary },
+  successIconWrap: {
+    width: 80,
+    height: 80,
+    borderRadius: 20,
+    backgroundColor: '#EDE9FE',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  successIcon: { fontSize: 40 },
+  successTitle: { fontSize: 24, fontWeight: '800', color: Colors.textPrimary },
   successDesc: { fontSize: 15, color: Colors.textSecondary, textAlign: 'center', lineHeight: 22 },
   backBtn: {
-    marginTop: 8, backgroundColor: Colors.primary,
-    borderRadius: 10, paddingHorizontal: 32, paddingVertical: 14,
+    marginTop: 8,
+    backgroundColor: Colors.primary,
+    borderRadius: 28,
+    paddingHorizontal: 36,
+    paddingVertical: 16,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
-  backBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
+  backBtnText: { color: '#fff', fontSize: 15, fontWeight: '800' },
 });

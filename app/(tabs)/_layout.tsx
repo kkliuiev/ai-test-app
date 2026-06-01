@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Platform, Text, View } from 'react-native';
+import { Platform, Text } from 'react-native';
 import DiamondLogo from '../../components/DiamondLogo';
 import { Colors } from '../../constants/colors';
 
@@ -7,11 +7,11 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors.primaryLight,
+        tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.textMuted,
         tabBarStyle: {
-          backgroundColor: Colors.bgCard,
-          borderTopColor: Colors.border,
+          backgroundColor: '#FFFFFF',
+          borderTopColor: '#E5E7EB',
           height: Platform.OS === 'ios' ? 88 : 64,
           paddingBottom: Platform.OS === 'ios' ? 28 : 10,
         },
@@ -24,10 +24,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'AML Checker',
+          title: 'Home',
           headerTitle: () => <DiamondLogo size="sm" showLabel />,
-          tabBarLabel: 'Checker',
-          tabBarIcon: () => <DiamondLogo size="sm" />,
+          tabBarLabel: 'Home',
+          tabBarIcon: ({ color }) => <DiamondLogo size="sm" />,
         }}
       />
       <Tabs.Screen
@@ -35,15 +35,15 @@ export default function TabLayout() {
         options={{
           title: 'History',
           tabBarLabel: 'History',
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 18 }}>📋</Text>,
+          tabBarIcon: ({ color }) => <Text style={{ fontSize: 18, color }}>📋</Text>,
         }}
       />
       <Tabs.Screen
         name="about"
         options={{
-          title: 'About',
-          tabBarLabel: 'About',
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 18 }}>ℹ</Text>,
+          title: 'Account',
+          tabBarLabel: 'Account',
+          tabBarIcon: ({ color }) => <Text style={{ fontSize: 18, color }}>👤</Text>,
         }}
       />
     </Tabs>
