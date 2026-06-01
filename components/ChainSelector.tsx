@@ -1,13 +1,8 @@
 import React from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { Chain } from '../types';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Colors } from '../constants/colors';
 import { SUPPORTED_CHAINS } from '../constants/chains';
+import { Chain } from '../types';
 
 interface Props {
   selected: Chain;
@@ -18,33 +13,18 @@ export default function ChainSelector({ selected, onSelect }: Props) {
   return (
     <View>
       <Text style={styles.label}>Blockchain Network</Text>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scroll}
-      >
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scroll}>
         {SUPPORTED_CHAINS.map((chain) => {
           const isActive = chain.id === selected.id;
           return (
             <TouchableOpacity
               key={chain.id}
               onPress={() => onSelect(chain)}
-              style={[
-                styles.chip,
-                isActive && {
-                  backgroundColor: chain.color + '22',
-                  borderColor: chain.color,
-                },
-              ]}
+              style={[styles.chip, isActive && { backgroundColor: Colors.bgHighlight, borderColor: Colors.primaryLight }]}
               activeOpacity={0.7}
             >
               <Text style={styles.icon}>{chain.icon}</Text>
-              <Text
-                style={[
-                  styles.name,
-                  isActive && { color: chain.color, fontWeight: '600' },
-                ]}
-              >
+              <Text style={[styles.name, isActive && { color: Colors.textAccent, fontWeight: '600' }]}>
                 {chain.symbol}
               </Text>
             </TouchableOpacity>
@@ -57,14 +37,15 @@ export default function ChainSelector({ selected, onSelect }: Props) {
 
 const styles = StyleSheet.create({
   label: {
-    fontSize: 13,
-    color: '#8E8E93',
+    fontSize: 12,
+    color: Colors.textSecondary,
     marginBottom: 10,
-    letterSpacing: 0.3,
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
   scroll: {
     gap: 8,
-    paddingBottom: 4,
+    paddingBottom: 2,
   },
   chip: {
     flexDirection: 'row',
@@ -72,16 +53,11 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 14,
     paddingVertical: 8,
-    backgroundColor: '#16162A',
-    borderRadius: 20,
+    backgroundColor: Colors.bgCard,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#2C2C3E',
+    borderColor: Colors.border,
   },
-  icon: {
-    fontSize: 14,
-  },
-  name: {
-    fontSize: 13,
-    color: '#AEAEC0',
-  },
+  icon: { fontSize: 13 },
+  name: { fontSize: 13, color: Colors.textSecondary },
 });

@@ -7,9 +7,9 @@ interface Props {
 }
 
 const CONFIG = {
-  info: { bg: '#1A2744', border: '#3A5298', text: '#7DA1F7', icon: 'ℹ' },
-  warning: { bg: '#2A1F00', border: '#6B4A00', text: '#FFB800', icon: '⚠' },
-  error: { bg: '#2A0A10', border: '#7A1524', text: '#FF2D55', icon: '✕' },
+  info:    { bg: '#0D1B3E', border: '#1D4ED8', text: '#60A5FA', icon: 'ℹ' },
+  warning: { bg: '#1C1400', border: '#78350F', text: '#F59E0B', icon: '⚠' },
+  error:   { bg: '#1C0A0A', border: '#7F1D1D', text: '#EF4444', icon: '✕' },
 };
 
 export default function InfoBanner({ type, message }: Props) {
@@ -32,14 +32,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 16,
   },
-  icon: {
-    fontSize: 15,
-    fontWeight: '700',
-    marginTop: 1,
-  },
-  message: {
-    flex: 1,
-    fontSize: 13,
-    lineHeight: 18,
-  },
+  icon: { fontSize: 14, fontWeight: '700', marginTop: 1 },
+  message: { flex: 1, fontSize: 13, lineHeight: 19 },
 });

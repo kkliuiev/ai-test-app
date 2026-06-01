@@ -10,7 +10,6 @@ import { RISK_FACTOR_DESCRIPTIONS, RISK_FACTOR_LABELS } from '../constants/chain
 
 const GOPLUS_BASE_URL = 'https://api.gopluslabs.io/api/v1';
 
-// High-weight risk indicators (count more toward score)
 const HIGH_WEIGHT_FACTORS = new Set([
   'sanctioned',
   'money_laundering',
@@ -38,9 +37,7 @@ export async function checkAddress(
 
   const response = await fetch(url, {
     method: 'GET',
-    headers: {
-      'Accept': 'application/json',
-    },
+    headers: { 'Accept': 'application/json' },
   });
 
   if (!response.ok) {
@@ -95,7 +92,6 @@ function buildRiskFactors(data: GoPlusAddressData): RiskFactor[] {
     });
   }
 
-  // Sort: risky first, then alphabetically
   return factors.sort((a, b) => {
     if (a.isRisky !== b.isRisky) return a.isRisky ? -1 : 1;
     return a.label.localeCompare(b.label);
@@ -132,33 +128,11 @@ function scoreToLevel(score: number): RiskLevel {
 }
 
 export function isValidAddress(address: string): boolean {
-  // EVM address (0x...)
   if (/^0x[0-9a-fA-F]{40}$/.test(address)) return true;
-  // Basic length check for other formats
   return address.length >= 26 && address.length <= 62;
 }
 
 export function truncateAddress(address: string, chars = 6): string {
   if (address.length <= chars * 2 + 3) return address;
   return `${address.slice(0, chars)}...${address.slice(-chars)}`;
-}
-
-export function getRiskColor(level: RiskLevel): string {
-  switch (level) {
-    case 'LOW': return '#00C896';
-    case 'MEDIUM': return '#FFB800';
-    case 'HIGH': return '#FF6B35';
-    case 'CRITICAL': return '#FF2D55';
-    default: return '#8E8E93';
-  }
-}
-
-export function getRiskEmoji(level: RiskLevel): string {
-  switch (level) {
-    case 'LOW': return '✓';
-    case 'MEDIUM': return '!';
-    case 'HIGH': return '!!';
-    case 'CRITICAL': return '!!!';
-    default: return '?';
-  }
 }

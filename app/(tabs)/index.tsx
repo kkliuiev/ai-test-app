@@ -14,16 +14,18 @@ import {
   View,
 } from 'react-native';
 import ChainSelector from '../../components/ChainSelector';
+import DiamondLogo from '../../components/DiamondLogo';
 import InfoBanner from '../../components/InfoBanner';
+import { Colors } from '../../constants/colors';
 import { SUPPORTED_CHAINS } from '../../constants/chains';
 import { checkAddress, isValidAddress } from '../../services/amlService';
 import { saveToHistory } from '../../services/historyService';
 import { AmlCheckResult, Chain } from '../../types';
 
 const DEMO_ADDRESSES = [
-  { label: 'Known Phisher (ETH)', address: '0xd882cfc20f52f2599d84b8e8d58c7fb62cfe344b' },
-  { label: 'Safe Address (ETH)', address: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F' },
-  { label: 'Mixer Related (ETH)', address: '0x8576aCC5C05D6Ce88f4e49bf65BdF0C62F91353C' },
+  { label: 'Known Phisher', address: '0xd882cfc20f52f2599d84b8e8d58c7fb62cfe344b' },
+  { label: 'Safe Address', address: '0x71C7656EC7ab88b098defB751B7401B5f6d8976F' },
+  { label: 'Mixer Related', address: '0x8576aCC5C05D6Ce88f4e49bf65BdF0C62F91353C' },
 ];
 
 export default function CheckerScreen() {
@@ -36,32 +38,17 @@ export default function CheckerScreen() {
   const handlePaste = async () => {
     try {
       const text = await Clipboard.getStringAsync();
-      if (text) {
-        setAddress(text.trim());
-        setError(null);
-      }
-    } catch {
-      // clipboard unavailable
-    }
+      if (text) { setAddress(text.trim()); setError(null); }
+    } catch {}
   };
 
   const handleClear = () => {
-    setAddress('');
-    setError(null);
-    inputRef.current?.focus();
-  };
-
-  const handleDemo = (addr: string) => {
-    setAddress(addr);
-    setError(null);
+    setAddress(''); setError(null); inputRef.current?.focus();
   };
 
   const handleCheck = async () => {
     const trimmed = address.trim();
-    if (!trimmed) {
-      setError('Please enter a crypto address');
-      return;
-    }
+    if (!trimmed) { setError('Please enter a crypto address'); return; }
     if (!isValidAddress(trimmed)) {
       setError('Invalid address format. EVM addresses start with 0x followed by 40 hex characters.');
       return;
@@ -79,10 +66,7 @@ export default function CheckerScreen() {
           ? Haptics.NotificationFeedbackType.Warning
           : Haptics.NotificationFeedbackType.Success
       );
-      router.push({
-        pathname: '/result',
-        params: { data: JSON.stringify(result) },
-      });
+      router.push({ pathname: '/result', params: { data: JSON.stringify(result) } });
     } catch (err: any) {
       setError(err?.message ?? 'Failed to check address. Please try again.');
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -91,27 +75,21 @@ export default function CheckerScreen() {
     }
   };
 
-  const addressIsValid = address.trim().length > 0 && isValidAddress(address.trim());
+  const valid = address.trim().length > 0 && isValidAddress(address.trim());
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.content}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={styles.heroSection}>
-          <Text style={styles.heroIcon}>🛡</Text>
-          <Text style={styles.heroTitle}>Crypto AML Checker</Text>
-          <Text style={styles.heroSubtitle}>
-            Analyze blockchain addresses for money laundering, sanctions,
-            and other high-risk activities
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <ScrollView style={styles.container} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
+
+        {/* Header */}
+        <View style={styles.hero}>
+          <DiamondLogo size="lg" showLabel />
+          <Text style={styles.heroDesc}>
+            Analyze blockchain addresses for sanctions, money laundering, phishing, and 17 other risk indicators.
           </Text>
         </View>
 
+        {/* Check Card */}
         <View style={styles.card}>
           <ChainSelector selected={selectedChain} onSelect={setSelectedChain} />
 
@@ -122,59 +100,53 @@ export default function CheckerScreen() {
                 ref={inputRef}
                 style={styles.input}
                 value={address}
-                onChangeText={(t) => {
-                  setAddress(t);
-                  setError(null);
-                }}
+                onChangeText={(t) => { setAddress(t); setError(null); }}
                 placeholder="0x..."
-                placeholderTextColor="#3D3D52"
+                placeholderTextColor={Colors.textMuted}
                 autoCapitalize="none"
                 autoCorrect={false}
                 spellCheck={false}
                 returnKeyType="done"
                 onSubmitEditing={handleCheck}
                 editable={!loading}
-                multiline={false}
               />
               {address.length > 0 ? (
-                <TouchableOpacity onPress={handleClear} style={styles.inputAction}>
-                  <Text style={styles.inputActionText}>✕</Text>
+                <TouchableOpacity onPress={handleClear} style={styles.inputBtn}>
+                  <Text style={styles.inputBtnText}>✕</Text>
                 </TouchableOpacity>
               ) : (
-                <TouchableOpacity onPress={handlePaste} style={styles.inputAction}>
+                <TouchableOpacity onPress={handlePaste} style={styles.inputBtn}>
                   <Text style={styles.pasteText}>Paste</Text>
                 </TouchableOpacity>
               )}
             </View>
-            {addressIsValid && (
-              <Text style={styles.validHint}>✓ Valid address format</Text>
-            )}
+            {valid && <Text style={styles.validHint}>✓ Valid address format</Text>}
           </View>
 
           {error && <InfoBanner type="error" message={error} />}
 
           <TouchableOpacity
-            style={[styles.checkButton, (!address.trim() || loading) && styles.checkButtonDisabled]}
+            style={[styles.checkBtn, (!address.trim() || loading) && styles.checkBtnDisabled]}
             onPress={handleCheck}
             disabled={!address.trim() || loading}
             activeOpacity={0.85}
           >
-            {loading ? (
-              <ActivityIndicator color="#FFFFFF" size="small" />
-            ) : (
-              <Text style={styles.checkButtonText}>Analyze Address</Text>
-            )}
+            {loading
+              ? <ActivityIndicator color="#fff" size="small" />
+              : <Text style={styles.checkBtnText}>Analyze Address</Text>
+            }
           </TouchableOpacity>
         </View>
 
+        {/* Demo addresses */}
         <View style={styles.demoSection}>
           <Text style={styles.demoTitle}>Try a demo address</Text>
-          <View style={styles.demoButtons}>
+          <View style={styles.demoRow}>
             {DEMO_ADDRESSES.map((d) => (
               <TouchableOpacity
                 key={d.address}
                 style={styles.demoChip}
-                onPress={() => handleDemo(d.address)}
+                onPress={() => { setAddress(d.address); setError(null); }}
                 activeOpacity={0.7}
               >
                 <Text style={styles.demoChipText}>{d.label}</Text>
@@ -185,7 +157,7 @@ export default function CheckerScreen() {
 
         <InfoBanner
           type="info"
-          message="Risk data is sourced from GoPlus Security Labs. This tool is for informational purposes only and does not constitute financial or legal advice."
+          message="Risk data is sourced from GoPlus Security Labs. For informational purposes only — not financial or legal advice."
         />
       </ScrollView>
     </KeyboardAvoidingView>
@@ -193,131 +165,69 @@ export default function CheckerScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0f0f1a',
-  },
-  content: {
-    padding: 20,
-    paddingBottom: 40,
-  },
-  heroSection: {
-    alignItems: 'center',
-    paddingVertical: 28,
-  },
-  heroIcon: {
-    fontSize: 48,
-    marginBottom: 12,
-  },
-  heroTitle: {
-    fontSize: 26,
-    fontWeight: '800',
-    color: '#FFFFFF',
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  heroSubtitle: {
-    fontSize: 14,
-    color: '#8E8E93',
-    textAlign: 'center',
-    lineHeight: 20,
-    maxWidth: 300,
-  },
+  container: { flex: 1, backgroundColor: Colors.bg },
+  content: { padding: 20, paddingBottom: 40 },
+
+  hero: { paddingVertical: 28, gap: 16 },
+  heroDesc: { fontSize: 14, color: Colors.textSecondary, lineHeight: 21 },
+
   card: {
-    backgroundColor: '#16162A',
-    borderRadius: 16,
+    backgroundColor: Colors.bgCard,
+    borderRadius: 14,
     padding: 20,
     borderWidth: 1,
-    borderColor: '#2C2C3E',
+    borderColor: Colors.border,
     marginBottom: 20,
     gap: 20,
   },
-  inputSection: {
-    gap: 8,
-  },
-  inputLabel: {
-    fontSize: 13,
-    color: '#8E8E93',
-    letterSpacing: 0.3,
-  },
+
+  inputSection: { gap: 8 },
+  inputLabel: { fontSize: 12, color: Colors.textSecondary, letterSpacing: 0.5, textTransform: 'uppercase' },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#0f0f1a',
+    backgroundColor: Colors.bgInput,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#2C2C3E',
+    borderColor: Colors.border,
     paddingHorizontal: 14,
     minHeight: 50,
   },
-  inputError: {
-    borderColor: '#FF2D55',
-  },
+  inputError: { borderColor: Colors.critical },
   input: {
     flex: 1,
-    color: '#FFFFFF',
-    fontSize: 15,
+    color: Colors.textPrimary,
+    fontSize: 14,
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
     paddingVertical: 12,
     letterSpacing: 0.3,
   },
-  inputAction: {
-    paddingLeft: 10,
-    paddingVertical: 8,
-  },
-  inputActionText: {
-    color: '#636374',
-    fontSize: 14,
-  },
-  pasteText: {
-    color: '#7B68EE',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  validHint: {
-    fontSize: 12,
-    color: '#00C896',
-  },
-  checkButton: {
-    backgroundColor: '#7B68EE',
-    borderRadius: 12,
-    paddingVertical: 16,
+  inputBtn: { paddingLeft: 10, paddingVertical: 8 },
+  inputBtnText: { color: Colors.textMuted, fontSize: 13 },
+  pasteText: { color: Colors.primaryLight, fontSize: 13, fontWeight: '600' },
+  validHint: { fontSize: 12, color: Colors.low },
+
+  checkBtn: {
+    backgroundColor: Colors.primary,
+    borderRadius: 10,
+    paddingVertical: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 52,
+    minHeight: 50,
   },
-  checkButtonDisabled: {
-    backgroundColor: '#2C2C3E',
-  },
-  checkButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-  },
-  demoSection: {
-    marginBottom: 20,
-  },
-  demoTitle: {
-    fontSize: 13,
-    color: '#636374',
-    marginBottom: 10,
-  },
-  demoButtons: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
+  checkBtnDisabled: { backgroundColor: Colors.border },
+  checkBtnText: { color: '#fff', fontSize: 15, fontWeight: '700', letterSpacing: 0.3 },
+
+  demoSection: { marginBottom: 20 },
+  demoTitle: { fontSize: 12, color: Colors.textMuted, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.5 },
+  demoRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   demoChip: {
-    backgroundColor: '#16162A',
+    backgroundColor: Colors.bgCard,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderWidth: 1,
-    borderColor: '#2C2C3E',
+    borderColor: Colors.border,
   },
-  demoChipText: {
-    fontSize: 12,
-    color: '#AEAEC0',
-  },
+  demoChipText: { fontSize: 12, color: Colors.textSecondary },
 });

@@ -1,29 +1,15 @@
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import {
-  Alert,
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import HistoryCard from '../../components/HistoryCard';
-import {
-  clearHistory,
-  getHistory,
-  removeHistoryItem,
-} from '../../services/historyService';
+import { Colors } from '../../constants/colors';
+import { clearHistory, getHistory, removeHistoryItem } from '../../services/historyService';
 import { HistoryItem } from '../../types';
 
 export default function HistoryScreen() {
   const [items, setItems] = useState<HistoryItem[]>([]);
 
-  useFocusEffect(
-    useCallback(() => {
-      getHistory().then(setItems);
-    }, [])
-  );
+  useFocusEffect(useCallback(() => { getHistory().then(setItems); }, []));
 
   const handleDelete = async (id: string) => {
     await removeHistoryItem(id);
@@ -31,44 +17,20 @@ export default function HistoryScreen() {
   };
 
   const handleClearAll = () => {
-    Alert.alert(
-      'Clear History',
-      'Are you sure you want to delete all check history?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Clear All',
-          style: 'destructive',
-          onPress: async () => {
-            await clearHistory();
-            setItems([]);
-          },
-        },
-      ]
-    );
-  };
-
-  const handlePress = (item: HistoryItem) => {
-    router.push({
-      pathname: '/result',
-      params: { data: JSON.stringify(item) },
-    });
+    Alert.alert('Clear History', 'Delete all check history?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Clear All', style: 'destructive', onPress: async () => { await clearHistory(); setItems([]); } },
+    ]);
   };
 
   if (items.length === 0) {
     return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyIcon}>📋</Text>
+      <View style={styles.empty}>
+        <View style={styles.emptyIcon}><Text style={styles.emptyEmoji}>📋</Text></View>
         <Text style={styles.emptyTitle}>No checks yet</Text>
-        <Text style={styles.emptySubtitle}>
-          Your AML check history will appear here
-        </Text>
-        <TouchableOpacity
-          style={styles.goButton}
-          onPress={() => router.push('/')}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.goButtonText}>Check an Address</Text>
+        <Text style={styles.emptySubtitle}>Your AML check history will appear here</Text>
+        <TouchableOpacity style={styles.goBtn} onPress={() => router.push('/')} activeOpacity={0.8}>
+          <Text style={styles.goBtnText}>Check an Address</Text>
         </TouchableOpacity>
       </View>
     );
@@ -81,11 +43,7 @@ export default function HistoryScreen() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
         renderItem={({ item }) => (
-          <HistoryCard
-            item={item}
-            onPress={handlePress}
-            onDelete={handleDelete}
-          />
+          <HistoryCard item={item} onPress={(i) => router.push({ pathname: '/result', params: { data: JSON.stringify(i) } })} onDelete={handleDelete} />
         )}
         ListHeaderComponent={
           <View style={styles.listHeader}>
@@ -101,62 +59,38 @@ export default function HistoryScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0f0f1a',
-  },
-  list: {
-    padding: 20,
-    paddingBottom: 40,
-  },
+  container: { flex: 1, backgroundColor: Colors.bg },
+  list: { padding: 20, paddingBottom: 40 },
   listHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 14,
   },
-  countText: {
-    fontSize: 14,
-    color: '#8E8E93',
-  },
-  clearText: {
-    fontSize: 14,
-    color: '#FF2D55',
-    fontWeight: '600',
-  },
-  emptyContainer: {
-    flex: 1,
-    backgroundColor: '#0f0f1a',
+  countText: { fontSize: 13, color: Colors.textSecondary },
+  clearText: { fontSize: 13, color: Colors.critical, fontWeight: '600' },
+
+  empty: { flex: 1, backgroundColor: Colors.bg, alignItems: 'center', justifyContent: 'center', padding: 40, gap: 12 },
+  emptyIcon: {
+    width: 72,
+    height: 72,
+    borderRadius: 18,
+    backgroundColor: Colors.bgCard,
+    borderWidth: 1,
+    borderColor: Colors.border,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 40,
-    gap: 12,
-  },
-  emptyIcon: {
-    fontSize: 52,
     marginBottom: 8,
   },
-  emptyTitle: {
-    fontSize: 22,
-    color: '#FFFFFF',
-    fontWeight: '700',
-  },
-  emptySubtitle: {
-    fontSize: 15,
-    color: '#8E8E93',
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-  goButton: {
-    marginTop: 16,
-    backgroundColor: '#7B68EE',
-    borderRadius: 12,
+  emptyEmoji: { fontSize: 32 },
+  emptyTitle: { fontSize: 20, color: Colors.textPrimary, fontWeight: '700' },
+  emptySubtitle: { fontSize: 14, color: Colors.textSecondary, textAlign: 'center', lineHeight: 21 },
+  goBtn: {
+    marginTop: 8,
+    backgroundColor: Colors.primary,
+    borderRadius: 10,
     paddingHorizontal: 28,
-    paddingVertical: 14,
+    paddingVertical: 13,
   },
-  goButtonText: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '700',
-  },
+  goBtnText: { color: '#fff', fontSize: 14, fontWeight: '700' },
 });

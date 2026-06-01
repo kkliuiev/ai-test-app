@@ -1,183 +1,132 @@
 import * as Clipboard from 'expo-clipboard';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
-import {
-  Alert,
-  Platform,
-  ScrollView,
-  Share,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Platform, ScrollView, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import RiskFactorRow from '../components/RiskFactorRow';
 import RiskGauge from '../components/RiskGauge';
-import { getRiskColor } from '../services/amlService';
+import { Colors, riskBg, riskBorder, riskColor } from '../constants/colors';
 import { AmlCheckResult } from '../types';
 
 export default function ResultScreen() {
   const { data } = useLocalSearchParams<{ data: string }>();
-  const [copiedAddress, setCopiedAddress] = useState(false);
+  const [copied, setCopied] = useState(false);
 
-  if (!data) {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>No result data found</Text>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backLink}>Go Back</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
+  if (!data) return <ErrorView />;
 
   let result: AmlCheckResult;
-  try {
-    result = JSON.parse(data);
-  } catch {
-    return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Invalid result data</Text>
-        <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.backLink}>Go Back</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
+  try { result = JSON.parse(data); }
+  catch { return <ErrorView />; }
 
   const { address, chain, riskLevel, riskScore, riskFactors, checkedAt } = result;
-  const riskColor = getRiskColor(riskLevel);
+  const color = riskColor(riskLevel);
   const riskyFactors = riskFactors.filter((f) => f.isRisky);
   const safeFactors = riskFactors.filter((f) => !f.isRisky);
 
-  const handleCopyAddress = async () => {
+  const handleCopy = async () => {
     await Clipboard.setStringAsync(address);
-    setCopiedAddress(true);
-    setTimeout(() => setCopiedAddress(false), 2000);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const handleShare = async () => {
-    const riskyList = riskyFactors.map((f) => `• ${f.label}`).join('\n');
-    const message =
-      `Crypto AML Check Result\n\n` +
-      `Address: ${address}\n` +
-      `Chain: ${chain.name}\n` +
-      `Risk Level: ${riskLevel} (${riskScore}/100)\n` +
-      `Checked: ${new Date(checkedAt).toLocaleString()}\n` +
-      (riskyList ? `\nRisk Factors:\n${riskyList}` : '\nNo risk factors detected.');
-    try {
-      await Share.share({ message });
-    } catch {
-      // share cancelled
-    }
+    const lines = riskyFactors.map((f) => `• ${f.label}`).join('\n');
+    await Share.share({
+      message:
+        `AML Check Result\n\n` +
+        `Address: ${address}\n` +
+        `Chain: ${chain.name}\n` +
+        `Risk: ${riskLevel} (${riskScore}/100)\n` +
+        `Checked: ${new Date(checkedAt).toLocaleString()}\n` +
+        (lines ? `\nRisk Factors:\n${lines}` : '\nNo risk factors detected.'),
+    });
   };
 
   const checkedDate = new Date(checkedAt).toLocaleString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
+    month: 'short', day: 'numeric', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
   });
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Risk Score Card */}
-      <View style={[styles.scoreCard, { borderColor: riskColor + '44' }]}>
-        <View style={[styles.scoreCardHeader, { backgroundColor: riskColor + '18' }]}>
+
+      {/* Score card */}
+      <View style={[styles.scoreCard, { borderColor: riskBorder(riskLevel) }]}>
+        <View style={[styles.scoreCardHeader, { backgroundColor: riskBg(riskLevel) }]}>
           <View style={styles.chainPill}>
-            <Text style={[styles.chainDot, { color: chain.color }]}>●</Text>
+            <View style={[styles.chainDot, { backgroundColor: chain.color }]} />
             <Text style={styles.chainLabel}>{chain.name}</Text>
           </View>
           <Text style={styles.checkedAt}>{checkedDate}</Text>
         </View>
-
         <View style={styles.gaugeArea}>
           <RiskGauge score={riskScore} level={riskLevel} />
         </View>
-
         <View style={styles.statsRow}>
-          <StatBox label="Risk Factors" value={String(riskyFactors.length)} color={riskColor} />
-          <View style={styles.statDivider} />
-          <StatBox label="Clean Checks" value={String(safeFactors.length)} color="#00C896" />
-          <View style={styles.statDivider} />
-          <StatBox label="Total Checks" value={String(riskFactors.length)} color="#8E8E93" />
+          <Stat label="Risk Factors" value={String(riskyFactors.length)} color={color} />
+          <View style={styles.statDiv} />
+          <Stat label="Clean Checks" value={String(safeFactors.length)} color={Colors.low} />
+          <View style={styles.statDiv} />
+          <Stat label="Total Checks" value={String(riskFactors.length)} color={Colors.textSecondary} />
         </View>
       </View>
 
-      {/* Address Card */}
-      <View style={styles.addressCard}>
-        <Text style={styles.sectionLabel}>Address</Text>
-        <TouchableOpacity onPress={handleCopyAddress} activeOpacity={0.75}>
-          <Text style={styles.addressText}>{address}</Text>
-          <Text style={styles.copyHint}>{copiedAddress ? '✓ Copied!' : 'Tap to copy'}</Text>
-        </TouchableOpacity>
-      </View>
+      {/* Address */}
+      <TouchableOpacity onPress={handleCopy} activeOpacity={0.75} style={styles.addressCard}>
+        <Text style={styles.addressLabel}>Address</Text>
+        <Text style={styles.addressText}>{address}</Text>
+        <Text style={styles.copyHint}>{copied ? '✓ Copied!' : 'Tap to copy'}</Text>
+      </TouchableOpacity>
 
-      {/* Summary Banner */}
+      {/* Summary */}
       {riskScore === 0 ? (
         <View style={styles.cleanBanner}>
           <Text style={styles.cleanIcon}>✓</Text>
           <View style={{ flex: 1 }}>
             <Text style={styles.cleanTitle}>No Risk Detected</Text>
-            <Text style={styles.cleanDesc}>
-              This address has no known risk indicators in our database.
-            </Text>
+            <Text style={styles.cleanDesc}>This address has no known risk indicators in our database.</Text>
           </View>
         </View>
       ) : (
-        <View style={[styles.riskSummaryBanner, { borderColor: riskColor + '44', backgroundColor: riskColor + '12' }]}>
-          <Text style={[styles.riskSummaryIcon, { color: riskColor }]}>⚠</Text>
+        <View style={[styles.riskBanner, { borderColor: riskBorder(riskLevel), backgroundColor: riskBg(riskLevel) }]}>
+          <Text style={[styles.riskBannerIcon, { color }]}>⚠</Text>
           <View style={{ flex: 1 }}>
-            <Text style={[styles.riskSummaryTitle, { color: riskColor }]}>
-              {riskLevel} RISK DETECTED
-            </Text>
-            <Text style={styles.riskSummaryDesc}>
-              {riskyFactors.length} risk indicator{riskyFactors.length !== 1 ? 's' : ''} found.
-              Exercise caution when transacting with this address.
+            <Text style={[styles.riskBannerTitle, { color }]}>{riskLevel} RISK DETECTED</Text>
+            <Text style={styles.riskBannerDesc}>
+              {riskyFactors.length} risk indicator{riskyFactors.length !== 1 ? 's' : ''} found. Exercise caution when transacting with this address.
             </Text>
           </View>
         </View>
       )}
 
-      {/* Risk Factors */}
+      {/* Risk indicators */}
       {riskyFactors.length > 0 && (
         <View style={styles.factorsSection}>
           <Text style={styles.sectionTitle}>Risk Indicators</Text>
-          {riskyFactors.map((factor) => (
-            <RiskFactorRow key={factor.key} factor={factor} />
-          ))}
+          {riskyFactors.map((f) => <RiskFactorRow key={f.key} factor={f} />)}
         </View>
       )}
 
-      {/* Safe Factors */}
       {safeFactors.length > 0 && (
         <View style={styles.factorsSection}>
           <Text style={styles.sectionTitle}>Clean Indicators</Text>
-          {safeFactors.map((factor) => (
-            <RiskFactorRow key={factor.key} factor={factor} />
-          ))}
+          {safeFactors.map((f) => <RiskFactorRow key={f.key} factor={f} />)}
         </View>
       )}
 
       {/* Actions */}
       <View style={styles.actions}>
-        <TouchableOpacity style={styles.shareButton} onPress={handleShare} activeOpacity={0.8}>
-          <Text style={styles.shareButtonText}>Share Report</Text>
+        <TouchableOpacity style={styles.shareBtn} onPress={handleShare} activeOpacity={0.8}>
+          <Text style={styles.shareBtnText}>Share Report</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.newCheckButton}
-          onPress={() => router.push('/')}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.newCheckButtonText}>Check Another</Text>
+        <TouchableOpacity style={styles.newCheckBtn} onPress={() => router.push('/')} activeOpacity={0.8}>
+          <Text style={styles.newCheckBtnText}>Check Another</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
   );
 }
 
-function StatBox({ label, value, color }: { label: string; value: string; color: string }) {
+function Stat({ label, value, color }: { label: string; value: string; color: string }) {
   return (
     <View style={styles.statBox}>
       <Text style={[styles.statValue, { color }]}>{value}</Text>
@@ -186,198 +135,83 @@ function StatBox({ label, value, color }: { label: string; value: string; color:
   );
 }
 
+function ErrorView() {
+  return (
+    <View style={styles.errContainer}>
+      <Text style={styles.errText}>Result not found</Text>
+      <TouchableOpacity onPress={() => router.back()}>
+        <Text style={styles.errLink}>Go Back</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0f0f1a',
-  },
-  content: {
-    padding: 20,
-    paddingBottom: 48,
-    gap: 16,
-  },
-  errorContainer: {
-    flex: 1,
-    backgroundColor: '#0f0f1a',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12,
-  },
-  errorText: {
-    color: '#FF2D55',
-    fontSize: 16,
-  },
-  backLink: {
-    color: '#7B68EE',
-    fontSize: 15,
-  },
+  container: { flex: 1, backgroundColor: Colors.bg },
+  content: { padding: 20, paddingBottom: 48, gap: 14 },
+
   scoreCard: {
-    backgroundColor: '#16162A',
-    borderRadius: 16,
-    borderWidth: 1,
-    overflow: 'hidden',
+    backgroundColor: Colors.bgCard, borderRadius: 14,
+    borderWidth: 1, overflow: 'hidden',
   },
   scoreCardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row', alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    paddingHorizontal: 16, paddingVertical: 10,
   },
-  chainPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  chainDot: {
-    fontSize: 10,
-  },
-  chainLabel: {
-    fontSize: 13,
-    color: '#AEAEC0',
-    fontWeight: '600',
-  },
-  checkedAt: {
-    fontSize: 12,
-    color: '#636374',
-  },
-  gaugeArea: {
-    alignItems: 'center',
-    paddingVertical: 20,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    borderTopWidth: 1,
-    borderTopColor: '#2C2C3E',
-  },
-  statBox: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 14,
-    gap: 4,
-  },
-  statDivider: {
-    width: 1,
-    backgroundColor: '#2C2C3E',
-    marginVertical: 10,
-  },
-  statValue: {
-    fontSize: 22,
-    fontWeight: '800',
-  },
-  statLabel: {
-    fontSize: 11,
-    color: '#636374',
-  },
+  chainPill: { flexDirection: 'row', alignItems: 'center', gap: 7 },
+  chainDot: { width: 8, height: 8, borderRadius: 4 },
+  chainLabel: { fontSize: 13, color: Colors.textSecondary, fontWeight: '600' },
+  checkedAt: { fontSize: 12, color: Colors.textMuted },
+  gaugeArea: { alignItems: 'center', paddingVertical: 20 },
+  statsRow: { flexDirection: 'row', borderTopWidth: 1, borderTopColor: Colors.border },
+  statBox: { flex: 1, alignItems: 'center', paddingVertical: 14, gap: 3 },
+  statDiv: { width: 1, backgroundColor: Colors.border, marginVertical: 10 },
+  statValue: { fontSize: 22, fontWeight: '800' },
+  statLabel: { fontSize: 11, color: Colors.textMuted },
+
   addressCard: {
-    backgroundColor: '#16162A',
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#2C2C3E',
-    gap: 8,
+    backgroundColor: Colors.bgCard, borderRadius: 12, padding: 16,
+    borderWidth: 1, borderColor: Colors.border, gap: 6,
   },
-  sectionLabel: {
-    fontSize: 12,
-    color: '#8E8E93',
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
-  },
+  addressLabel: { fontSize: 11, color: Colors.textSecondary, textTransform: 'uppercase', letterSpacing: 0.5 },
   addressText: {
-    fontSize: 13,
-    color: '#FFFFFF',
+    fontSize: 13, color: Colors.textPrimary,
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
-    letterSpacing: 0.5,
-    lineHeight: 20,
+    letterSpacing: 0.4, lineHeight: 20,
   },
-  copyHint: {
-    fontSize: 12,
-    color: '#7B68EE',
-    marginTop: 4,
-  },
+  copyHint: { fontSize: 12, color: Colors.primaryLight },
+
   cleanBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    backgroundColor: '#001F14',
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#00C89644',
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: Colors.lowBg, borderRadius: 12, padding: 16,
+    borderWidth: 1, borderColor: Colors.lowBorder,
   },
-  cleanIcon: {
-    fontSize: 22,
-    color: '#00C896',
+  cleanIcon: { fontSize: 20, color: Colors.low },
+  cleanTitle: { fontSize: 14, fontWeight: '700', color: Colors.low, marginBottom: 3 },
+  cleanDesc: { fontSize: 13, color: Colors.low, opacity: 0.7, lineHeight: 18 },
+
+  riskBanner: {
+    flexDirection: 'row', alignItems: 'flex-start', gap: 12,
+    borderRadius: 12, padding: 16, borderWidth: 1,
   },
-  cleanTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#00C896',
-    marginBottom: 3,
+  riskBannerIcon: { fontSize: 18, marginTop: 1 },
+  riskBannerTitle: { fontSize: 13, fontWeight: '800', letterSpacing: 0.5, marginBottom: 4 },
+  riskBannerDesc: { fontSize: 13, color: Colors.textSecondary, lineHeight: 18 },
+
+  factorsSection: { gap: 0 },
+  sectionTitle: { fontSize: 13, fontWeight: '700', color: Colors.textAccent, marginBottom: 10, textTransform: 'uppercase', letterSpacing: 0.8 },
+
+  actions: { gap: 10, marginTop: 4 },
+  shareBtn: {
+    backgroundColor: Colors.bgCard, borderRadius: 10, paddingVertical: 14,
+    alignItems: 'center', borderWidth: 1, borderColor: Colors.border,
   },
-  cleanDesc: {
-    fontSize: 13,
-    color: '#00C89699',
-    lineHeight: 18,
-  },
-  riskSummaryBanner: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: 12,
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-  },
-  riskSummaryIcon: {
-    fontSize: 20,
-    marginTop: 1,
-  },
-  riskSummaryTitle: {
-    fontSize: 14,
-    fontWeight: '800',
-    letterSpacing: 0.5,
-    marginBottom: 4,
-  },
-  riskSummaryDesc: {
-    fontSize: 13,
-    color: '#AEAEC0',
-    lineHeight: 18,
-  },
-  factorsSection: {
-    gap: 0,
-  },
-  sectionTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    marginBottom: 12,
-  },
-  actions: {
-    gap: 10,
-    marginTop: 8,
-  },
-  shareButton: {
-    backgroundColor: '#16162A',
-    borderRadius: 12,
-    paddingVertical: 15,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#2C2C3E',
-  },
-  shareButtonText: {
-    color: '#AEAEC0',
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  newCheckButton: {
-    backgroundColor: '#7B68EE',
-    borderRadius: 12,
-    paddingVertical: 15,
-    alignItems: 'center',
-  },
-  newCheckButtonText: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '700',
-  },
+  shareBtnText: { color: Colors.textSecondary, fontSize: 14, fontWeight: '600' },
+  newCheckBtn: { backgroundColor: Colors.primary, borderRadius: 10, paddingVertical: 14, alignItems: 'center' },
+  newCheckBtnText: { color: '#fff', fontSize: 14, fontWeight: '700' },
+
+  errContainer: { flex: 1, backgroundColor: Colors.bg, alignItems: 'center', justifyContent: 'center', gap: 12 },
+  errText: { color: Colors.critical, fontSize: 16 },
+  errLink: { color: Colors.primaryLight, fontSize: 15 },
 });
