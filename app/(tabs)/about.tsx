@@ -1,7 +1,8 @@
 import React from 'react';
-import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import DiamondLogo from '../../components/DiamondLogo';
 import { Colors } from '../../constants/colors';
+import { useAuth } from '../../context/AuthContext';
 
 const RISK_LEVELS = [
   { level: 'LOW',      color: Colors.low,      range: '0',      desc: 'No risk indicators detected' },
@@ -20,6 +21,15 @@ const NETWORKS = [
 ];
 
 export default function AboutScreen() {
+  const { user, isGuest, signOut } = useAuth();
+
+  const handleSignOut = () => {
+    Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Sign Out', style: 'destructive', onPress: signOut },
+    ]);
+  };
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
 
@@ -27,6 +37,39 @@ export default function AboutScreen() {
       <View style={styles.brandRow}>
         <DiamondLogo size="lg" showLabel />
         <Text style={styles.version}>v1.0.0</Text>
+      </View>
+
+      {/* Account section */}
+      <View style={styles.accountCard}>
+        {user ? (
+          <>
+            <View style={styles.accountRow}>
+              <View style={styles.accountIconWrap}>
+                <Text style={styles.accountIcon}>👤</Text>
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.accountLabel}>Signed in as</Text>
+                <Text style={styles.accountEmail} numberOfLines={1}>{user.email}</Text>
+              </View>
+              <View style={styles.syncBadge}>
+                <Text style={styles.syncText}>☁ Synced</Text>
+              </View>
+            </View>
+            <TouchableOpacity style={styles.signOutBtn} onPress={handleSignOut} activeOpacity={0.8}>
+              <Text style={styles.signOutText}>Sign Out</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <View style={styles.accountRow}>
+            <View style={styles.accountIconWrap}>
+              <Text style={styles.accountIcon}>👤</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.accountLabel}>Guest Mode</Text>
+              <Text style={styles.accountSub}>History saved locally only</Text>
+            </View>
+          </View>
+        )}
       </View>
 
       <Text style={styles.description}>
@@ -106,6 +149,32 @@ const styles = StyleSheet.create({
 
   brandRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
   version: { fontSize: 12, color: Colors.textMuted },
+
+  accountCard: {
+    backgroundColor: Colors.bgCard, borderRadius: 12, padding: 16,
+    borderWidth: 1, borderColor: Colors.border, gap: 12, marginBottom: 12,
+  },
+  accountRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  accountIconWrap: {
+    width: 40, height: 40, borderRadius: 10,
+    backgroundColor: Colors.bgHighlight,
+    borderWidth: 1, borderColor: Colors.border,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  accountIcon: { fontSize: 18 },
+  accountLabel: { fontSize: 12, color: Colors.textSecondary, marginBottom: 2 },
+  accountEmail: { fontSize: 14, color: Colors.textPrimary, fontWeight: '600' },
+  accountSub: { fontSize: 13, color: Colors.textMuted },
+  syncBadge: {
+    backgroundColor: Colors.lowBg, borderRadius: 6, borderWidth: 1,
+    borderColor: Colors.lowBorder, paddingHorizontal: 8, paddingVertical: 4,
+  },
+  syncText: { fontSize: 11, color: Colors.low, fontWeight: '600' },
+  signOutBtn: {
+    backgroundColor: Colors.criticalBg, borderRadius: 8, borderWidth: 1,
+    borderColor: Colors.criticalBorder, paddingVertical: 10, alignItems: 'center',
+  },
+  signOutText: { color: Colors.critical, fontSize: 14, fontWeight: '600' },
 
   description: { fontSize: 14, color: Colors.textSecondary, lineHeight: 22, marginBottom: 28 },
 
