@@ -1,39 +1,45 @@
 import { RiskLevel } from '../types';
 
 export const Colors = {
-  bg: '#EBEBF0',
-  bgCard: '#FFFFFF',
-  bgInput: '#F2F2F7',
-  bgHighlight: '#F5F5FA',
+  // Backgrounds
+  bg: '#0B0F1C',
+  bgCard: '#111827',
+  bgInput: '#0D1421',
+  bgHighlight: '#1A2744',
 
+  // Brand
   primary: '#7C3AED',
   primaryLight: '#9F67FF',
   gradientStart: '#7C3AED',
   gradientEnd: '#D946EF',
 
-  border: '#E5E7EB',
-  borderLight: '#F3F4F6',
+  // Borders
+  border: '#1F2937',
+  borderLight: '#1F2937',
+  borderActive: '#7C3AED',
 
-  textPrimary: '#111827',
-  textSecondary: '#6B7280',
-  textMuted: '#9CA3AF',
-  textAccent: '#7C3AED',
+  // Text
+  textPrimary: '#F9FAFB',
+  textSecondary: '#9CA3AF',
+  textMuted: '#4B5563',
+  textAccent: '#A78BFA',
 
+  // Risk levels
   low: '#10B981',
-  lowBg: '#ECFDF5',
-  lowBorder: '#A7F3D0',
+  lowBg: '#10B98118',
+  lowBorder: '#10B98144',
 
   medium: '#F59E0B',
-  mediumBg: '#FFFBEB',
-  mediumBorder: '#FDE68A',
+  mediumBg: '#F59E0B18',
+  mediumBorder: '#F59E0B44',
 
   high: '#F97316',
-  highBg: '#FFF7ED',
-  highBorder: '#FED7AA',
+  highBg: '#F9731618',
+  highBorder: '#F9731644',
 
   critical: '#EF4444',
-  criticalBg: '#FEF2F2',
-  criticalBorder: '#FECACA',
+  criticalBg: '#EF444418',
+  criticalBorder: '#EF444444',
 
   unknown: '#6B7280',
 } as const;
@@ -56,7 +62,7 @@ export function riskBg(level: RiskLevel): string {
     case 'MEDIUM': return Colors.mediumBg;
     case 'HIGH': return Colors.highBg;
     case 'CRITICAL': return Colors.criticalBg;
-    default: return '#F9FAFB';
+    default: return '#6B728018';
   }
 }
 
@@ -66,6 +72,6 @@ export function riskBorder(level: RiskLevel): string {
     case 'MEDIUM': return Colors.mediumBorder;
     case 'HIGH': return Colors.highBorder;
     case 'CRITICAL': return Colors.criticalBorder;
-    default: return '#E5E7EB';
+    default: return '#6B728044';
   }
 }
