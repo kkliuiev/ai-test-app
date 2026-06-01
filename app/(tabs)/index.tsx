@@ -155,10 +155,6 @@ export default function CheckerScreen() {
           </View>
         </View>
 
-        <InfoBanner
-          type="info"
-          message="Risk data is sourced from GoPlus Security Labs. For informational purposes only — not financial or legal advice."
-        />
       </ScrollView>
     </KeyboardAvoidingView>
   );

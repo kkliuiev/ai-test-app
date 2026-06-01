@@ -1,5 +1,5 @@
 import { DarkTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack, router } from 'expo-router';
+import { Stack, router, useRootNavigationState } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
@@ -19,19 +19,21 @@ export default function RootLayout() {
 
 function AppNavigator() {
   const { session, loading, isGuest } = useAuth();
+  const navigationState = useRootNavigationState();
 
   useEffect(() => {
     if (!loading) SplashScreen.hideAsync();
   }, [loading]);
 
   useEffect(() => {
-    if (loading) return;
+    // Wait for both auth to resolve and the navigation tree to be mounted
+    if (!navigationState?.key || loading) return;
     if (session || isGuest) {
       router.replace('/(tabs)');
     } else {
       router.replace('/(auth)/login');
     }
-  }, [session, isGuest, loading]);
+  }, [navigationState?.key, session, isGuest, loading]);
 
   if (loading) {
     return (

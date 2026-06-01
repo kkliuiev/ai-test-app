@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { supabase } from '../lib/supabase';
+import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { AmlCheckResult, HistoryItem } from '../types';
 
 const LOCAL_KEY = 'aml_check_history';
@@ -8,6 +8,7 @@ const MAX_LOCAL = 50;
 // ─── Supabase (cloud, authenticated) ────────────────────────────────────────
 
 async function getSession() {
+  if (!isSupabaseConfigured) return null;
   const { data: { session } } = await supabase.auth.getSession();
   return session;
 }

@@ -1,3 +1,5 @@
+import 'react-native-url-polyfill/auto';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
 
 const rawUrl = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
@@ -7,9 +9,9 @@ const isConfigured = rawUrl.startsWith('https://') && rawKey.length > 0;
 const supabaseUrl = isConfigured ? rawUrl : 'https://placeholder.supabase.co';
 const supabaseAnonKey = isConfigured ? rawKey : 'placeholder-anon-key';
 
-// Web build — uses browser localStorage by default (no AsyncStorage needed)
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
+    storage: AsyncStorage,
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,
