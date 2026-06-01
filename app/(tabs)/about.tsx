@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import React from 'react';
-import { Alert, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { useAuth } from '../../context/AuthContext';
 
@@ -93,15 +93,12 @@ export default function AboutScreen() {
       <View style={styles.sourceCard}>
         <View style={styles.sourceHeader}>
           <View style={styles.sourceDot} />
-          <Text style={styles.sourceName}>GoPlus Security Labs</Text>
+          <Text style={styles.sourceName}>On-chain Security Intelligence</Text>
         </View>
         <Text style={styles.sourceDesc}>
-          Real-time on-chain security intelligence for EVM-compatible blockchains.
-          Aggregates data from 40+ trusted sources including SlowMist, BlockSec, and OFAC sanctions lists.
+          Real-time security analysis for EVM-compatible blockchains.
+          Aggregates data from 40+ trusted sources including sanctions lists and threat intelligence feeds.
         </Text>
-        <TouchableOpacity onPress={() => Linking.openURL('https://gopluslabs.io')}>
-          <Text style={styles.sourceUrl}>gopluslabs.io →</Text>
-        </TouchableOpacity>
       </View>
 
       {/* Disclaimer */}
