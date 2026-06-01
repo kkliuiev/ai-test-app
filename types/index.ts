@@ -24,10 +24,10 @@ export interface AmlCheckResult {
   riskScore: number;
   riskFactors: RiskFactor[];
   checkedAt: string;
-  rawData?: GoPlusAddressResponse;
+  rawData?: AddressSecurityResponse;
 }
 
-export interface GoPlusAddressData {
+export interface AddressSecurityData {
   blacklist_doubt: string;
   blackmail_activities: string;
   cybercrime: string;
@@ -49,10 +49,10 @@ export interface GoPlusAddressData {
   contract_address: string;
 }
 
-export interface GoPlusAddressResponse {
+export interface AddressSecurityResponse {
   code: number;
   message: string;
-  result: GoPlusAddressData;
+  result: AddressSecurityData;
 }
 
 export interface HistoryItem extends AmlCheckResult {

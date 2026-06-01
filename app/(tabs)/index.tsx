@@ -70,7 +70,7 @@ export default function HomeScreen() {
           <View style={styles.bannerLeft}>
             <Text style={styles.bannerStar}>✦</Text>
             <Text style={styles.bannerTitle}>AML Risk Check</Text>
-            <Text style={styles.bannerSub}>GoPlus · 40+ sources · 6 chains</Text>
+            <Text style={styles.bannerSub}>40+ sources · 6 chains</Text>
           </View>
           <Text style={styles.bannerArrow}>→</Text>
         </TouchableOpacity>

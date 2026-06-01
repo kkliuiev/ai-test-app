@@ -1,14 +1,14 @@
 import {
+  AddressSecurityData,
+  AddressSecurityResponse,
   AmlCheckResult,
   Chain,
-  GoPlusAddressData,
-  GoPlusAddressResponse,
   RiskFactor,
   RiskLevel,
 } from '../types';
 import { RISK_FACTOR_DESCRIPTIONS, RISK_FACTOR_LABELS } from '../constants/chains';
 
-const GOPLUS_BASE_URL = 'https://api.gopluslabs.io/api/v1';
+const SECURITY_API_BASE_URL = 'https://api.gopluslabs.io/api/v1';
 
 const HIGH_WEIGHT_FACTORS = new Set([
   'sanctioned',
@@ -33,7 +33,7 @@ export async function checkAddress(
   address: string,
   chain: Chain
 ): Promise<AmlCheckResult> {
-  const url = `${GOPLUS_BASE_URL}/address_security/${address}?chain_id=${chain.chainId}`;
+  const url = `${SECURITY_API_BASE_URL}/address_security/${address}?chain_id=${chain.chainId}`;
 
   const response = await fetch(url, {
     method: 'GET',
@@ -44,7 +44,7 @@ export async function checkAddress(
     throw new Error(`API request failed with status ${response.status}`);
   }
 
-  const data: GoPlusAddressResponse = await response.json();
+  const data: AddressSecurityResponse = await response.json();
 
   if (data.code !== 1) {
     throw new Error(data.message || 'API returned an error');
@@ -71,7 +71,7 @@ export async function checkAddress(
   };
 }
 
-function buildRiskFactors(data: GoPlusAddressData): RiskFactor[] {
+function buildRiskFactors(data: AddressSecurityData): RiskFactor[] {
   const factors: RiskFactor[] = [];
   const skip = new Set(['data_source', 'contract_address']);
 
@@ -99,7 +99,7 @@ function buildRiskFactors(data: GoPlusAddressData): RiskFactor[] {
 }
 
 function calculateRiskScore(
-  data: GoPlusAddressData,
+  data: AddressSecurityData,
   factors: RiskFactor[]
 ): number {
   let score = 0;
