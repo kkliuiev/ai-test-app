@@ -8,21 +8,21 @@ export const Colors = {
   bgHighlight: '#1A2744',
 
   // Brand
-  primary: '#7C3AED',
-  primaryLight: '#9F67FF',
-  gradientStart: '#7C3AED',
-  gradientEnd: '#D946EF',
+  primary: '#2563EB',
+  primaryLight: '#3B82F6',
+  gradientStart: '#2563EB',
+  gradientEnd: '#60A5FA',
 
   // Borders
   border: '#1F2937',
   borderLight: '#1F2937',
-  borderActive: '#7C3AED',
+  borderActive: '#2563EB',
 
   // Text
   textPrimary: '#F9FAFB',
   textSecondary: '#9CA3AF',
   textMuted: '#4B5563',
-  textAccent: '#A78BFA',
+  textAccent: '#60A5FA',
 
   // Risk levels
   low: '#10B981',
