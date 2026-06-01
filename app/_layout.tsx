@@ -1,4 +1,4 @@
-import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, router, useRootNavigationState } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
@@ -8,17 +8,6 @@ import { Colors } from '../constants/colors';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 
 SplashScreen.preventAutoHideAsync();
-
-const LightTheme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    background: Colors.bg,
-    card: '#FFFFFF',
-    text: Colors.textPrimary,
-    border: Colors.border,
-  },
-};
 
 export default function RootLayout() {
   return (
@@ -55,10 +44,10 @@ function AppNavigator() {
   }
 
   return (
-    <ThemeProvider value={LightTheme}>
+    <ThemeProvider value={DarkTheme}>
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: '#FFFFFF' },
+          headerStyle: { backgroundColor: Colors.bgCard },
           headerTintColor: Colors.textPrimary,
           contentStyle: { backgroundColor: Colors.bg },
           headerShadowVisible: false,
@@ -72,7 +61,7 @@ function AppNavigator() {
             headerTitle: () => <DiamondLogo size="sm" showLabel />,
             headerBackTitle: 'Back',
             presentation: 'card',
-            headerStyle: { backgroundColor: '#FFFFFF' },
+            headerStyle: { backgroundColor: Colors.bgCard },
           }}
         />
         <Stack.Screen
@@ -81,7 +70,7 @@ function AppNavigator() {
             headerTitle: 'AML Check',
             headerBackTitle: 'Home',
             presentation: 'card',
-            headerStyle: { backgroundColor: '#FFFFFF' },
+            headerStyle: { backgroundColor: Colors.bgCard },
             headerTintColor: Colors.primary,
           }}
         />

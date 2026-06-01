@@ -54,14 +54,14 @@ export default function AboutScreen() {
       <View style={styles.menuCard}>
         <MenuItem
           icon="📋"
-          iconBg="#DBEAFE"
+          iconBg="#1E3A5F"
           label="Request History"
           onPress={() => router.push('/(tabs)/history')}
         />
         <View style={styles.menuDivider} />
         <MenuItem
           icon="🔍"
-          iconBg="#EDE9FE"
+          iconBg="#3D1A78"
           label="New AML Check"
           onPress={() => router.push('/check')}
         />
@@ -70,7 +70,7 @@ export default function AboutScreen() {
             <View style={styles.menuDivider} />
             <MenuItem
               icon="🚪"
-              iconBg="#FEE2E2"
+              iconBg="#3B1A1A"
               label="Sign Out"
               labelColor={Colors.critical}
               onPress={handleSignOut}
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   disclaimerTitle: { fontSize: 14, fontWeight: '700', color: Colors.medium },
-  disclaimerText: { fontSize: 13, color: '#92400E', lineHeight: 20 },
+  disclaimerText: { fontSize: 13, color: Colors.textSecondary, lineHeight: 20 },
 
   version: { fontSize: 12, color: Colors.textMuted, textAlign: 'center', marginBottom: 8 },
 });

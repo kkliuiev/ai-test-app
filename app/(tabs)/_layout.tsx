@@ -7,15 +7,15 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors.primary,
+        tabBarActiveTintColor: Colors.primaryLight,
         tabBarInactiveTintColor: Colors.textMuted,
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
-          borderTopColor: '#E5E7EB',
+          backgroundColor: Colors.bgCard,
+          borderTopColor: Colors.border,
           height: Platform.OS === 'ios' ? 88 : 64,
           paddingBottom: Platform.OS === 'ios' ? 28 : 10,
         },
-        headerStyle: { backgroundColor: Colors.bg },
+        headerStyle: { backgroundColor: Colors.bgCard },
         headerTintColor: Colors.textPrimary,
         headerShadowVisible: false,
         headerTitleStyle: { fontWeight: '700' },

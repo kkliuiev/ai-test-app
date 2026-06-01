@@ -16,28 +16,28 @@ import { useAuth } from '../../context/AuthContext';
 const SERVICE_CARDS = [
   {
     icon: '🔍',
-    iconBg: '#EDE9FE',
+    iconBg: '#3D1A78',
     title: 'AML Check',
     subtitle: 'Screen any address',
     route: '/check' as const,
   },
   {
     icon: '🕐',
-    iconBg: '#DBEAFE',
+    iconBg: '#1E3A5F',
     title: 'History',
     subtitle: 'Your past checks',
     route: '/(tabs)/history' as const,
   },
   {
     icon: 'ℹ',
-    iconBg: '#D1FAE5',
+    iconBg: '#064E3B',
     title: 'About',
     subtitle: 'Risk score guide',
     route: '/(tabs)/about' as const,
   },
   {
     icon: '⛓',
-    iconBg: '#FCE7F3',
+    iconBg: '#831843',
     title: 'Networks',
     subtitle: '6 chains supported',
     route: '/check' as const,
