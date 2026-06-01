@@ -12,7 +12,7 @@ interface Props {
 export default function ChainSelector({ selected, onSelect }: Props) {
   return (
     <View>
-      <Text style={styles.label}>Blockchain Network</Text>
+      <Text style={styles.label}>NETWORK</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scroll}>
         {SUPPORTED_CHAINS.map((chain) => {
           const isActive = chain.id === selected.id;
@@ -20,11 +20,11 @@ export default function ChainSelector({ selected, onSelect }: Props) {
             <TouchableOpacity
               key={chain.id}
               onPress={() => onSelect(chain)}
-              style={[styles.chip, isActive && { backgroundColor: Colors.bgHighlight, borderColor: Colors.primaryLight }]}
+              style={[styles.chip, isActive && styles.chipActive]}
               activeOpacity={0.7}
             >
               <Text style={styles.icon}>{chain.icon}</Text>
-              <Text style={[styles.name, isActive && { color: Colors.textAccent, fontWeight: '600' }]}>
+              <Text style={[styles.name, isActive && styles.nameActive]}>
                 {chain.symbol}
               </Text>
             </TouchableOpacity>
@@ -37,11 +37,12 @@ export default function ChainSelector({ selected, onSelect }: Props) {
 
 const styles = StyleSheet.create({
   label: {
-    fontSize: 12,
-    color: Colors.textSecondary,
+    fontSize: 11,
+    color: Colors.textMuted,
     marginBottom: 10,
-    letterSpacing: 0.5,
+    letterSpacing: 0.8,
     textTransform: 'uppercase',
+    fontWeight: '600',
   },
   scroll: {
     gap: 8,
@@ -52,12 +53,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     paddingHorizontal: 14,
-    paddingVertical: 8,
-    backgroundColor: Colors.bgCard,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    paddingVertical: 9,
+    backgroundColor: Colors.bgInput,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: 'transparent',
+  },
+  chipActive: {
+    backgroundColor: '#EDE9FE',
+    borderColor: Colors.primary,
   },
   icon: { fontSize: 13 },
-  name: { fontSize: 13, color: Colors.textSecondary },
+  name: { fontSize: 13, color: Colors.textSecondary, fontWeight: '500' },
+  nameActive: { color: Colors.primary, fontWeight: '700' },
 });
