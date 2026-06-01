@@ -1,76 +1,71 @@
-// AMLBot-inspired color palette
+import { RiskLevel } from '../types';
+
 export const Colors = {
-  // Backgrounds
-  bg: '#0B0F1C',
-  bgCard: '#111827',
-  bgInput: '#0D1421',
-  bgHighlight: '#1A2744',
+  bg: '#EBEBF0',
+  bgCard: '#FFFFFF',
+  bgInput: '#F2F2F7',
+  bgHighlight: '#F5F5FA',
 
-  // Brand
-  primary: '#2563EB',
-  primaryLight: '#3B82F6',
-  primaryMuted: '#1D4ED833',
+  primary: '#7C3AED',
+  primaryLight: '#9F67FF',
+  gradientStart: '#7C3AED',
+  gradientEnd: '#D946EF',
 
-  // Borders
-  border: '#1F2937',
-  borderActive: '#3B82F6',
+  border: '#E5E7EB',
+  borderLight: '#F3F4F6',
 
-  // Text
-  textPrimary: '#F9FAFB',
-  textSecondary: '#9CA3AF',
-  textMuted: '#4B5563',
-  textAccent: '#60A5FA',
+  textPrimary: '#111827',
+  textSecondary: '#6B7280',
+  textMuted: '#9CA3AF',
+  textAccent: '#7C3AED',
 
-  // Risk levels
   low: '#10B981',
-  lowBg: '#10B98118',
-  lowBorder: '#10B98144',
+  lowBg: '#ECFDF5',
+  lowBorder: '#A7F3D0',
 
   medium: '#F59E0B',
-  mediumBg: '#F59E0B18',
-  mediumBorder: '#F59E0B44',
+  mediumBg: '#FFFBEB',
+  mediumBorder: '#FDE68A',
 
   high: '#F97316',
-  highBg: '#F9731618',
-  highBorder: '#F9731644',
+  highBg: '#FFF7ED',
+  highBorder: '#FED7AA',
 
   critical: '#EF4444',
-  criticalBg: '#EF444418',
-  criticalBorder: '#EF444444',
+  criticalBg: '#FEF2F2',
+  criticalBorder: '#FECACA',
 
   unknown: '#6B7280',
 } as const;
 
 export type RiskColorKey = 'low' | 'medium' | 'high' | 'critical' | 'unknown';
 
-import { RiskLevel } from '../types';
-
 export function riskColor(level: RiskLevel): string {
   switch (level) {
-    case 'LOW':      return Colors.low;
-    case 'MEDIUM':   return Colors.medium;
-    case 'HIGH':     return Colors.high;
+    case 'LOW': return Colors.low;
+    case 'MEDIUM': return Colors.medium;
+    case 'HIGH': return Colors.high;
     case 'CRITICAL': return Colors.critical;
-    default:         return Colors.unknown;
+    default: return Colors.unknown;
   }
 }
 
 export function riskBg(level: RiskLevel): string {
   switch (level) {
-    case 'LOW':      return Colors.lowBg;
-    case 'MEDIUM':   return Colors.mediumBg;
-    case 'HIGH':     return Colors.highBg;
+    case 'LOW': return Colors.lowBg;
+    case 'MEDIUM': return Colors.mediumBg;
+    case 'HIGH': return Colors.highBg;
     case 'CRITICAL': return Colors.criticalBg;
-    default:         return '#6B728018';
+    default: return '#F9FAFB';
   }
 }
 
 export function riskBorder(level: RiskLevel): string {
   switch (level) {
-    case 'LOW':      return Colors.lowBorder;
-    case 'MEDIUM':   return Colors.mediumBorder;
-    case 'HIGH':     return Colors.highBorder;
+    case 'LOW': return Colors.lowBorder;
+    case 'MEDIUM': return Colors.mediumBorder;
+    case 'HIGH': return Colors.highBorder;
     case 'CRITICAL': return Colors.criticalBorder;
-    default:         return '#6B728044';
+    default: return '#E5E7EB';
   }
 }
