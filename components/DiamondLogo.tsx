@@ -35,7 +35,7 @@ export default function DiamondLogo({ size = 'md', showLabel = false, light = fa
         height={h}
         viewBox={`${DIAMOND_VIEWBOX.x} ${DIAMOND_VIEWBOX.y} ${DIAMOND_VIEWBOX.w} ${DIAMOND_VIEWBOX.h}`}
       >
-        <Path d={DIAMOND_PATH} fill="#7C3AED" fillRule="evenodd" clipRule="evenodd" />
+        <Path d={DIAMOND_PATH} fill="#2563EB" fillRule="evenodd" clipRule="evenodd" />
       </Svg>
 
       {showLabel && (

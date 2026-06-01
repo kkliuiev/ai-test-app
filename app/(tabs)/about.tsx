@@ -61,7 +61,7 @@ export default function AboutScreen() {
         <View style={styles.menuDivider} />
         <MenuItem
           icon="🔍"
-          iconBg="#3D1A78"
+          iconBg="#1E3A5F"
           label="New AML Check"
           onPress={() => router.push('/check')}
         />
@@ -147,13 +147,13 @@ const styles = StyleSheet.create({
   content: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 48, gap: 0 },
 
   accountBanner: {
-    backgroundColor: '#1E1B4B',
+    backgroundColor: '#0F172A',
     borderRadius: 20,
     padding: 24,
     alignItems: 'center',
     gap: 8,
     marginBottom: 20,
-    shadowColor: '#7C3AED',
+    shadowColor: '#2563EB',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.25,
     shadowRadius: 12,

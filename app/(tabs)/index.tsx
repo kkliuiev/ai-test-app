@@ -16,7 +16,7 @@ import { useAuth } from '../../context/AuthContext';
 const SERVICE_CARDS = [
   {
     icon: '🔍',
-    iconBg: '#3D1A78',
+    iconBg: '#1E3A5F',
     title: 'AML Check',
     subtitle: 'Screen any address',
     route: '/check' as const,
@@ -151,24 +151,24 @@ const styles = StyleSheet.create({
   userBadgeText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '500' },
 
   banner: {
-    backgroundColor: '#1E1B4B',
+    backgroundColor: '#0F172A',
     borderRadius: 20,
     padding: 24,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 28,
-    shadowColor: '#7C3AED',
+    shadowColor: '#2563EB',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
     elevation: 8,
   },
   bannerLeft: { gap: 6 },
-  bannerStar: { fontSize: 20, color: '#D946EF' },
+  bannerStar: { fontSize: 20, color: '#3B82F6' },
   bannerTitle: { fontSize: 22, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.3 },
   bannerSub: { fontSize: 13, color: 'rgba(255,255,255,0.55)' },
-  bannerArrow: { fontSize: 24, color: '#D946EF', fontWeight: '600' },
+  bannerArrow: { fontSize: 24, color: '#3B82F6', fontWeight: '600' },
 
   sectionLabel: {
     fontSize: 11,

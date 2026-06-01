@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   chipActive: {
-    backgroundColor: '#3D1A78',
+    backgroundColor: '#1E3A5F',
     borderColor: Colors.primary,
   },
   icon: { fontSize: 13 },
