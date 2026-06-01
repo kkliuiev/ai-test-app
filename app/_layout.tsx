@@ -1,13 +1,15 @@
 import { DarkTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, router, useRootNavigationState } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import DiamondLogo from '../components/DiamondLogo';
 import { Colors } from '../constants/colors';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 
 SplashScreen.preventAutoHideAsync();
+
+const SPLASH_MIN_MS = 15000;
 
 export default function RootLayout() {
   return (
@@ -20,21 +22,31 @@ export default function RootLayout() {
 function AppNavigator() {
   const { session, loading, isGuest } = useAuth();
   const navigationState = useRootNavigationState();
+  const [splashReady, setSplashReady] = useState(false);
+  const timerFired = useRef(false);
 
   useEffect(() => {
-    if (!loading) SplashScreen.hideAsync();
-  }, [loading]);
+    const t = setTimeout(() => {
+      timerFired.current = true;
+      setSplashReady(true);
+    }, SPLASH_MIN_MS);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
-    if (!navigationState?.key || loading) return;
+    if (!loading && splashReady) SplashScreen.hideAsync();
+  }, [loading, splashReady]);
+
+  useEffect(() => {
+    if (!navigationState?.key || loading || !splashReady) return;
     if (session || isGuest) {
       router.replace('/(tabs)');
     } else {
       router.replace('/(auth)/login');
     }
-  }, [navigationState?.key, session, isGuest, loading]);
+  }, [navigationState?.key, session, isGuest, loading, splashReady]);
 
-  if (loading) {
+  if (loading || !splashReady) {
     return (
       <View style={{ flex: 1, backgroundColor: Colors.bg, alignItems: 'center', justifyContent: 'center', gap: 20 }}>
         <DiamondLogo size="xl" showLabel />
