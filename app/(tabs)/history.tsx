@@ -26,10 +26,12 @@ export default function HistoryScreen() {
   if (items.length === 0) {
     return (
       <View style={styles.empty}>
-        <View style={styles.emptyIcon}><Text style={styles.emptyEmoji}>📋</Text></View>
+        <View style={styles.emptyIconWrap}>
+          <Text style={styles.emptyEmoji}>📋</Text>
+        </View>
         <Text style={styles.emptyTitle}>No checks yet</Text>
         <Text style={styles.emptySubtitle}>Your AML check history will appear here</Text>
-        <TouchableOpacity style={styles.goBtn} onPress={() => router.push('/')} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.goBtn} onPress={() => router.push('/check')} activeOpacity={0.8}>
           <Text style={styles.goBtnText}>Check an Address</Text>
         </TouchableOpacity>
       </View>
@@ -43,12 +45,19 @@ export default function HistoryScreen() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
         renderItem={({ item }) => (
-          <HistoryCard item={item} onPress={(i) => router.push({ pathname: '/result', params: { data: JSON.stringify(i) } })} onDelete={handleDelete} />
+          <HistoryCard
+            item={item}
+            onPress={(i) => router.push({ pathname: '/result', params: { data: JSON.stringify(i) } })}
+            onDelete={handleDelete}
+          />
         )}
         ListHeaderComponent={
           <View style={styles.listHeader}>
-            <Text style={styles.countText}>{items.length} checks</Text>
-            <TouchableOpacity onPress={handleClearAll}>
+            <View>
+              <Text style={styles.listHeaderTitle}>Recent Checks</Text>
+              <Text style={styles.countText}>{items.length} addresses checked</Text>
+            </View>
+            <TouchableOpacity onPress={handleClearAll} style={styles.clearBtn}>
               <Text style={styles.clearText}>Clear All</Text>
             </TouchableOpacity>
           </View>
@@ -65,32 +74,64 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 16,
   },
+  listHeaderTitle: { fontSize: 18, fontWeight: '800', color: Colors.textPrimary, marginBottom: 2 },
   countText: { fontSize: 13, color: Colors.textSecondary },
+  clearBtn: {
+    backgroundColor: Colors.criticalBg,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: Colors.criticalBorder,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+  },
   clearText: { fontSize: 13, color: Colors.critical, fontWeight: '600' },
 
-  empty: { flex: 1, backgroundColor: Colors.bg, alignItems: 'center', justifyContent: 'center', padding: 40, gap: 12 },
-  emptyIcon: {
-    width: 72,
-    height: 72,
-    borderRadius: 18,
+  empty: {
+    flex: 1,
+    backgroundColor: Colors.bg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 40,
+    gap: 12,
+  },
+  emptyIconWrap: {
+    width: 80,
+    height: 80,
+    borderRadius: 20,
     backgroundColor: Colors.bgCard,
     borderWidth: 1,
     borderColor: Colors.border,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
   },
-  emptyEmoji: { fontSize: 32 },
-  emptyTitle: { fontSize: 20, color: Colors.textPrimary, fontWeight: '700' },
-  emptySubtitle: { fontSize: 14, color: Colors.textSecondary, textAlign: 'center', lineHeight: 21 },
+  emptyEmoji: { fontSize: 36 },
+  emptyTitle: { fontSize: 22, color: Colors.textPrimary, fontWeight: '800' },
+  emptySubtitle: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 21,
+    maxWidth: 240,
+  },
   goBtn: {
     marginTop: 8,
     backgroundColor: Colors.primary,
-    borderRadius: 10,
-    paddingHorizontal: 28,
-    paddingVertical: 13,
+    borderRadius: 28,
+    paddingHorizontal: 32,
+    paddingVertical: 15,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
-  goBtnText: { color: '#fff', fontSize: 14, fontWeight: '700' },
+  goBtnText: { color: '#fff', fontSize: 15, fontWeight: '700' },
 });

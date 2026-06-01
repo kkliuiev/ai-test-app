@@ -1,4 +1,4 @@
-import { DarkTheme, ThemeProvider } from '@react-navigation/native';
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, router, useRootNavigationState } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
@@ -8,6 +8,17 @@ import { Colors } from '../constants/colors';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 
 SplashScreen.preventAutoHideAsync();
+
+const LightTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: Colors.bg,
+    card: '#FFFFFF',
+    text: Colors.textPrimary,
+    border: Colors.border,
+  },
+};
 
 export default function RootLayout() {
   return (
@@ -26,7 +37,6 @@ function AppNavigator() {
   }, [loading]);
 
   useEffect(() => {
-    // Wait for both auth to resolve and the navigation tree to be mounted
     if (!navigationState?.key || loading) return;
     if (session || isGuest) {
       router.replace('/(tabs)');
@@ -45,10 +55,10 @@ function AppNavigator() {
   }
 
   return (
-    <ThemeProvider value={DarkTheme}>
+    <ThemeProvider value={LightTheme}>
       <Stack
         screenOptions={{
-          headerStyle: { backgroundColor: Colors.bg },
+          headerStyle: { backgroundColor: '#FFFFFF' },
           headerTintColor: Colors.textPrimary,
           contentStyle: { backgroundColor: Colors.bg },
           headerShadowVisible: false,
@@ -62,6 +72,17 @@ function AppNavigator() {
             headerTitle: () => <DiamondLogo size="sm" showLabel />,
             headerBackTitle: 'Back',
             presentation: 'card',
+            headerStyle: { backgroundColor: '#FFFFFF' },
+          }}
+        />
+        <Stack.Screen
+          name="check"
+          options={{
+            headerTitle: 'AML Check',
+            headerBackTitle: 'Home',
+            presentation: 'card',
+            headerStyle: { backgroundColor: '#FFFFFF' },
+            headerTintColor: Colors.primary,
           }}
         />
         <Stack.Screen name="+not-found" />
