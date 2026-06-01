@@ -53,6 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     if (isSupabaseConfigured) await supabase.auth.signOut();
+    setSession(null);
     setIsGuest(false);
   };
 
