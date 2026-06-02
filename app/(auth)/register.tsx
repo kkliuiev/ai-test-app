@@ -15,9 +15,11 @@ import DiamondLogo from '../../components/DiamondLogo';
 import InfoBanner from '../../components/InfoBanner';
 import { Colors } from '../../constants/colors';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from '../../lib/i18n';
 
 export default function RegisterScreen() {
   const { signUp } = useAuth();
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -27,15 +29,15 @@ export default function RegisterScreen() {
 
   const handleRegister = async () => {
     if (!email.trim() || !password) {
-      setError('Please fill in all fields');
+      setError(t('register.errorFillAll'));
       return;
     }
     if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError(t('register.errorMinPassword'));
       return;
     }
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('register.errorPasswordMatch'));
       return;
     }
 
@@ -57,15 +59,13 @@ export default function RegisterScreen() {
         <View style={styles.successIconWrap}>
           <Text style={styles.successIcon}>✉</Text>
         </View>
-        <Text style={styles.successTitle}>Check your email</Text>
+        <Text style={styles.successTitle}>{t('register.successTitle')}</Text>
         <Text style={styles.successDesc}>
-          We sent a confirmation link to{'\n'}
-          <Text style={{ color: Colors.primary, fontWeight: '700' }}>{email}</Text>
-          {'\n\n'}Open the link to activate your account, then sign in.
+          {t('register.successDesc', { email })}
         </Text>
         <Link href="/(auth)/login" asChild>
           <TouchableOpacity style={styles.backBtn}>
-            <Text style={styles.backBtnText}>Back to Sign In</Text>
+            <Text style={styles.backBtnText}>{t('register.backToSignIn')}</Text>
           </TouchableOpacity>
         </Link>
       </View>
@@ -79,24 +79,22 @@ export default function RegisterScreen() {
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Header */}
         <View style={styles.header}>
           <DiamondLogo size="xl" showLabel />
-          <Text style={styles.tagline}>Create an account to sync your checks across all devices</Text>
+          <Text style={styles.tagline}>{t('register.tagline')}</Text>
         </View>
 
-        {/* Form card */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Create Account</Text>
+          <Text style={styles.cardTitle}>{t('register.title')}</Text>
 
           {error && <InfoBanner type="error" message={error} />}
 
           <View style={styles.field}>
-            <Text style={styles.label}>EMAIL</Text>
+            <Text style={styles.label}>{t('login.email')}</Text>
             <TextInput
               style={styles.input}
               value={email}
-              onChangeText={(t) => { setEmail(t); setError(null); }}
+              onChangeText={(v) => { setEmail(v); setError(null); }}
               placeholder="you@example.com"
               placeholderTextColor={Colors.textMuted}
               keyboardType="email-address"
@@ -107,12 +105,12 @@ export default function RegisterScreen() {
           </View>
 
           <View style={styles.field}>
-            <Text style={styles.label}>PASSWORD</Text>
+            <Text style={styles.label}>{t('register.password')}</Text>
             <TextInput
               style={styles.input}
               value={password}
-              onChangeText={(t) => { setPassword(t); setError(null); }}
-              placeholder="Min. 6 characters"
+              onChangeText={(v) => { setPassword(v); setError(null); }}
+              placeholder={t('register.minPassword')}
               placeholderTextColor={Colors.textMuted}
               secureTextEntry
               autoCapitalize="none"
@@ -121,12 +119,12 @@ export default function RegisterScreen() {
           </View>
 
           <View style={styles.field}>
-            <Text style={styles.label}>CONFIRM PASSWORD</Text>
+            <Text style={styles.label}>{t('register.confirmPassword')}</Text>
             <TextInput
               style={styles.input}
               value={confirmPassword}
-              onChangeText={(t) => { setConfirmPassword(t); setError(null); }}
-              placeholder="Repeat password"
+              onChangeText={(v) => { setConfirmPassword(v); setError(null); }}
+              placeholder={t('register.repeatPassword')}
               placeholderTextColor={Colors.textMuted}
               secureTextEntry
               autoCapitalize="none"
@@ -143,17 +141,16 @@ export default function RegisterScreen() {
           >
             {loading
               ? <ActivityIndicator color="#fff" size="small" />
-              : <Text style={styles.primaryBtnText}>Create Account</Text>
+              : <Text style={styles.primaryBtnText}>{t('register.createAccount')}</Text>
             }
           </TouchableOpacity>
         </View>
 
-        {/* Footer */}
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Already have an account?</Text>
+          <Text style={styles.footerText}>{t('register.haveAccount')}</Text>
           <Link href="/(auth)/login" asChild>
             <TouchableOpacity>
-              <Text style={styles.footerLink}>Sign in</Text>
+              <Text style={styles.footerLink}>{t('register.signIn')}</Text>
             </TouchableOpacity>
           </Link>
         </View>

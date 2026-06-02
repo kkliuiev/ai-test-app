@@ -24,6 +24,7 @@ export interface AmlCheckResult {
   riskScore: number;
   riskFactors: RiskFactor[];
   checkedAt: string;
+  fromCache?: boolean;
   rawData?: AddressSecurityResponse;
 }
 

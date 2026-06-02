@@ -15,9 +15,11 @@ import DiamondLogo from '../../components/DiamondLogo';
 import InfoBanner from '../../components/InfoBanner';
 import { Colors } from '../../constants/colors';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from '../../lib/i18n';
 
 export default function LoginScreen() {
   const { signIn, continueAsGuest } = useAuth();
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,7 +28,7 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     if (!email.trim() || !password) {
-      setError('Please enter your email and password');
+      setError(t('login.errorEmpty'));
       return;
     }
     setLoading(true);
@@ -50,24 +52,22 @@ export default function LoginScreen() {
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Header */}
         <View style={styles.header}>
           <DiamondLogo size="xl" showLabel />
-          <Text style={styles.tagline}>Sign in to sync your AML checks across devices</Text>
+          <Text style={styles.tagline}>{t('login.tagline')}</Text>
         </View>
 
-        {/* Form card */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Sign In</Text>
+          <Text style={styles.cardTitle}>{t('login.title')}</Text>
 
           {error && <InfoBanner type="error" message={error} />}
 
           <View style={styles.field}>
-            <Text style={styles.label}>EMAIL</Text>
+            <Text style={styles.label}>{t('login.email')}</Text>
             <TextInput
               style={styles.input}
               value={email}
-              onChangeText={(t) => { setEmail(t); setError(null); }}
+              onChangeText={(v) => { setEmail(v); setError(null); }}
               placeholder="you@example.com"
               placeholderTextColor={Colors.textMuted}
               keyboardType="email-address"
@@ -79,10 +79,10 @@ export default function LoginScreen() {
 
           <View style={styles.field}>
             <View style={styles.labelRow}>
-              <Text style={styles.label}>PASSWORD</Text>
+              <Text style={styles.label}>{t('login.password')}</Text>
               <Link href="/(auth)/forgot-password" asChild>
                 <TouchableOpacity>
-                  <Text style={styles.forgotText}>Forgot password?</Text>
+                  <Text style={styles.forgotText}>{t('login.forgotPassword')}</Text>
                 </TouchableOpacity>
               </Link>
             </View>
@@ -90,7 +90,7 @@ export default function LoginScreen() {
               <TextInput
                 style={styles.passwordInput}
                 value={password}
-                onChangeText={(t) => { setPassword(t); setError(null); }}
+                onChangeText={(v) => { setPassword(v); setError(null); }}
                 placeholder="••••••••"
                 placeholderTextColor={Colors.textMuted}
                 secureTextEntry={!showPassword}
@@ -112,32 +112,29 @@ export default function LoginScreen() {
           >
             {loading
               ? <ActivityIndicator color="#fff" size="small" />
-              : <Text style={styles.primaryBtnText}>Sign In</Text>
+              : <Text style={styles.primaryBtnText}>{t('login.signIn')}</Text>
             }
           </TouchableOpacity>
         </View>
 
-        {/* Footer nav */}
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Don't have an account?</Text>
+          <Text style={styles.footerText}>{t('login.noAccount')}</Text>
           <Link href="/(auth)/register" asChild>
             <TouchableOpacity>
-              <Text style={styles.footerLink}>Create account</Text>
+              <Text style={styles.footerLink}>{t('login.createAccount')}</Text>
             </TouchableOpacity>
           </Link>
         </View>
 
-        {/* Divider */}
         <View style={styles.dividerRow}>
           <View style={styles.divider} />
-          <Text style={styles.dividerText}>or</Text>
+          <Text style={styles.dividerText}>{t('login.or')}</Text>
           <View style={styles.divider} />
         </View>
 
-        {/* Guest button */}
         <TouchableOpacity style={styles.guestBtn} onPress={handleGuest} activeOpacity={0.8}>
-          <Text style={styles.guestBtnText}>Continue as Guest</Text>
-          <Text style={styles.guestSubtext}>History saved locally only</Text>
+          <Text style={styles.guestBtnText}>{t('login.continueAsGuest')}</Text>
+          <Text style={styles.guestSubtext}>{t('login.guestSub')}</Text>
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>

@@ -6,6 +6,8 @@ import { ActivityIndicator, View } from 'react-native';
 import DiamondLogo from '../components/DiamondLogo';
 import { Colors } from '../constants/colors';
 import { AuthProvider, useAuth } from '../context/AuthContext';
+import { I18nProvider } from '../lib/i18n';
+import { requestNotificationPermission } from '../services/notificationService';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -13,9 +15,11 @@ const SPLASH_MIN_MS = 15000;
 
 export default function RootLayout() {
   return (
-    <AuthProvider>
-      <AppNavigator />
-    </AuthProvider>
+    <I18nProvider>
+      <AuthProvider>
+        <AppNavigator />
+      </AuthProvider>
+    </I18nProvider>
   );
 }
 
@@ -34,7 +38,10 @@ function AppNavigator() {
   }, []);
 
   useEffect(() => {
-    if (!loading && splashReady) SplashScreen.hideAsync();
+    if (!loading && splashReady) {
+      SplashScreen.hideAsync();
+      requestNotificationPermission();
+    }
   }, [loading, splashReady]);
 
   useEffect(() => {

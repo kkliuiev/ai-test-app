@@ -12,71 +12,42 @@ import {
 import DiamondLogo from '../../components/DiamondLogo';
 import { Colors } from '../../constants/colors';
 import { useAuth } from '../../context/AuthContext';
-
-const SERVICE_CARDS = [
-  {
-    icon: '🔍',
-    iconBg: '#1E3A5F',
-    title: 'AML Check',
-    subtitle: 'Screen any address',
-    route: '/check' as const,
-  },
-  {
-    icon: '🕐',
-    iconBg: '#1E3A5F',
-    title: 'History',
-    subtitle: 'Your past checks',
-    route: '/(tabs)/history' as const,
-  },
-  {
-    icon: 'ℹ',
-    iconBg: '#064E3B',
-    title: 'About',
-    subtitle: 'Risk score guide',
-    route: '/(tabs)/about' as const,
-  },
-  {
-    icon: '⛓',
-    iconBg: '#831843',
-    title: 'Networks',
-    subtitle: '6 chains supported',
-    route: '/check' as const,
-  },
-];
+import { useTranslation } from '../../lib/i18n';
 
 export default function HomeScreen() {
-  const { user, isGuest } = useAuth();
+  const { user } = useAuth();
+  const { t } = useTranslation();
+
+  const SERVICE_CARDS = [
+    { icon: '🔍', iconBg: '#1E3A5F', title: t('home.amlCheck'), subtitle: t('home.amlCheckSub'), route: '/check' as const },
+    { icon: '🕐', iconBg: '#1E3A5F', title: t('home.history'), subtitle: t('home.historySub'), route: '/(tabs)/history' as const },
+    { icon: 'ℹ', iconBg: '#064E3B', title: t('home.about'), subtitle: t('home.aboutSub'), route: '/(tabs)/about' as const },
+    { icon: '⛓', iconBg: '#831843', title: t('home.networks'), subtitle: t('home.networksSub'), route: '/check' as const },
+  ];
 
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
 
-        {/* Top header */}
         <View style={styles.topBar}>
           <DiamondLogo size="md" showLabel />
           <View style={styles.userBadge}>
             <Text style={styles.userBadgeText}>
-              {user ? (user.email?.split('@')[0] ?? 'User') : 'Guest'}
+              {user ? (user.email?.split('@')[0] ?? 'User') : t('home.guest')}
             </Text>
           </View>
         </View>
 
-        {/* Banner card */}
-        <TouchableOpacity
-          style={styles.banner}
-          onPress={() => router.push('/check')}
-          activeOpacity={0.88}
-        >
+        <TouchableOpacity style={styles.banner} onPress={() => router.push('/check')} activeOpacity={0.88}>
           <View style={styles.bannerLeft}>
             <Text style={styles.bannerStar}>✦</Text>
-            <Text style={styles.bannerTitle}>AML Risk Check</Text>
-            <Text style={styles.bannerSub}>40+ sources · 6 chains</Text>
+            <Text style={styles.bannerTitle}>{t('home.bannerTitle')}</Text>
+            <Text style={styles.bannerSub}>{t('home.bannerSub')}</Text>
           </View>
           <Text style={styles.bannerArrow}>→</Text>
         </TouchableOpacity>
 
-        {/* Services section */}
-        <Text style={styles.sectionLabel}>SERVICES</Text>
+        <Text style={styles.sectionLabel}>{t('home.services')}</Text>
         <View style={styles.grid}>
           {SERVICE_CARDS.map((card) => (
             <TouchableOpacity
@@ -94,35 +65,28 @@ export default function HomeScreen() {
           ))}
         </View>
 
-        {/* Quick nav row */}
         <View style={styles.quickRow}>
           <TouchableOpacity style={styles.quickBtn} onPress={() => router.push('/(tabs)/history')} activeOpacity={0.7}>
-            <Text style={styles.quickBtnText}>History</Text>
+            <Text style={styles.quickBtnText}>{t('home.history')}</Text>
           </TouchableOpacity>
           <View style={styles.quickDivider} />
           <View style={styles.quickBtn}>
             <Text style={styles.quickBtnText} numberOfLines={1}>
-              {user ? (user.email ?? 'Account') : 'Guest'}
+              {user ? (user.email ?? 'Account') : t('home.guest')}
             </Text>
           </View>
           <View style={styles.quickDivider} />
           <TouchableOpacity style={styles.quickBtn} onPress={() => router.push('/(tabs)/about')} activeOpacity={0.7}>
-            <Text style={styles.quickBtnText}>About</Text>
+            <Text style={styles.quickBtnText}>{t('home.about')}</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Spacer for bottom button */}
         <View style={{ height: 80 }} />
       </ScrollView>
 
-      {/* Sticky new check button */}
       <View style={styles.ctaContainer}>
-        <TouchableOpacity
-          style={styles.ctaBtn}
-          onPress={() => router.push('/check')}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.ctaBtnText}>🔍  New Check</Text>
+        <TouchableOpacity style={styles.ctaBtn} onPress={() => router.push('/check')} activeOpacity={0.85}>
+          <Text style={styles.ctaBtnText}>{t('home.newCheck')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -134,12 +98,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { paddingHorizontal: 20, paddingTop: 16, paddingBottom: 20 },
 
-  topBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-  },
+  topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 },
   userBadge: {
     backgroundColor: Colors.bgCard,
     borderRadius: 20,
@@ -179,12 +138,7 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
 
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-    marginBottom: 20,
-  },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 20 },
   serviceCard: {
     backgroundColor: Colors.bgCard,
     borderRadius: 16,
@@ -199,13 +153,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 2,
   },
-  serviceIconWrap: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  serviceIconWrap: { width: 44, height: 44, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   serviceIcon: { fontSize: 20 },
   serviceTitle: { fontSize: 15, fontWeight: '700', color: Colors.textPrimary },
   serviceSubtitle: { fontSize: 12, color: Colors.textSecondary },
@@ -218,12 +166,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.border,
     overflow: 'hidden',
   },
-  quickBtn: {
-    flex: 1,
-    paddingVertical: 13,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  quickBtn: { flex: 1, paddingVertical: 13, alignItems: 'center', justifyContent: 'center' },
   quickBtnText: { fontSize: 13, color: Colors.textSecondary, fontWeight: '500' },
   quickDivider: { width: 1, backgroundColor: Colors.border, marginVertical: 10 },
 

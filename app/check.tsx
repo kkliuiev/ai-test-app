@@ -18,22 +18,26 @@ import ChainSelector from '../components/ChainSelector';
 import InfoBanner from '../components/InfoBanner';
 import { Colors } from '../constants/colors';
 import { SUPPORTED_CHAINS } from '../constants/chains';
+import { useTranslation } from '../lib/i18n';
 import { checkAddress, isValidAddress } from '../services/amlService';
+import { getCached, setCached } from '../services/cacheService';
 import { saveToHistory } from '../services/historyService';
+import { notifyCheckComplete } from '../services/notificationService';
 import { AmlCheckResult, Chain } from '../types';
 
-const HOW_IT_WORKS = [
-  { num: '1', text: 'Enter any EVM wallet or contract address' },
-  { num: '2', text: 'Select the blockchain network' },
-  { num: '3', text: 'Instantly get a risk score from 40+ sources' },
-];
-
 export default function CheckScreen() {
+  const { t } = useTranslation();
   const [address, setAddress] = useState('');
   const [selectedChain, setSelectedChain] = useState<Chain>(SUPPORTED_CHAINS[0]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<TextInput>(null);
+
+  const HOW_IT_WORKS = [
+    { num: '1', text: t('check.step1') },
+    { num: '2', text: t('check.step2') },
+    { num: '3', text: t('check.step3') },
+  ];
 
   const handlePaste = async () => {
     try {
@@ -48,9 +52,9 @@ export default function CheckScreen() {
 
   const handleCheck = async () => {
     const trimmed = address.trim();
-    if (!trimmed) { setError('Please enter a crypto address'); return; }
+    if (!trimmed) { setError(t('check.errorEmpty')); return; }
     if (!isValidAddress(trimmed)) {
-      setError('Invalid address format. EVM addresses start with 0x followed by 40 hex characters.');
+      setError(t('check.errorInvalid'));
       return;
     }
 
@@ -59,16 +63,27 @@ export default function CheckScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     try {
+      // Check cache first
+      const cached = await getCached(trimmed, selectedChain.chainId);
+      if (cached) {
+        await saveToHistory(cached);
+        Haptics.notificationAsync(
+          cached.riskScore > 50 ? Haptics.NotificationFeedbackType.Warning : Haptics.NotificationFeedbackType.Success
+        );
+        router.push({ pathname: '/result', params: { data: JSON.stringify(cached) } });
+        return;
+      }
+
       const result: AmlCheckResult = await checkAddress(trimmed, selectedChain);
+      await setCached(result);
       await saveToHistory(result);
+      notifyCheckComplete(result);
       Haptics.notificationAsync(
-        result.riskScore > 50
-          ? Haptics.NotificationFeedbackType.Warning
-          : Haptics.NotificationFeedbackType.Success
+        result.riskScore > 50 ? Haptics.NotificationFeedbackType.Warning : Haptics.NotificationFeedbackType.Success
       );
       router.push({ pathname: '/result', params: { data: JSON.stringify(result) } });
     } catch (err: any) {
-      setError(err?.message ?? 'Failed to check address. Please try again.');
+      setError(err?.message ?? t('check.errorFailed'));
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
       setLoading(false);
@@ -85,31 +100,26 @@ export default function CheckScreen() {
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Hero icon + title */}
           <View style={styles.hero}>
             <View style={styles.heroIcon}>
               <Text style={styles.heroIconText}>🔍</Text>
             </View>
-            <Text style={styles.heroTitle}>AML Risk Check</Text>
-            <Text style={styles.heroSubtitle}>
-              Screen any blockchain address for risk indicators
-            </Text>
+            <Text style={styles.heroTitle}>{t('check.title')}</Text>
+            <Text style={styles.heroSubtitle}>{t('check.subtitle')}</Text>
           </View>
 
-          {/* Chain selector */}
           <View style={styles.section}>
             <ChainSelector selected={selectedChain} onSelect={setSelectedChain} />
           </View>
 
-          {/* Address input */}
           <View style={styles.section}>
-            <Text style={styles.inputLabel}>ADDRESS</Text>
+            <Text style={styles.inputLabel}>{t('check.addressLabel')}</Text>
             <View style={[styles.inputWrapper, error ? styles.inputError : null]}>
               <TextInput
                 ref={inputRef}
                 style={styles.input}
                 value={address}
-                onChangeText={(t) => { setAddress(t); setError(null); }}
+                onChangeText={(v) => { setAddress(v); setError(null); }}
                 placeholder="0x..."
                 placeholderTextColor={Colors.textMuted}
                 autoCapitalize="none"
@@ -125,18 +135,17 @@ export default function CheckScreen() {
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity onPress={handlePaste} style={styles.inputBtn}>
-                  <Text style={styles.pasteText}>Paste</Text>
+                  <Text style={styles.pasteText}>{t('check.paste')}</Text>
                 </TouchableOpacity>
               )}
             </View>
-            {valid && <Text style={styles.validHint}>✓ Valid address format</Text>}
+            {valid && <Text style={styles.validHint}>{t('check.validAddress')}</Text>}
           </View>
 
           {error && <InfoBanner type="error" message={error} />}
 
-          {/* How it works */}
           <View style={styles.howCard}>
-            <Text style={styles.howTitle}>HOW IT WORKS</Text>
+            <Text style={styles.howTitle}>{t('check.howTitle')}</Text>
             {HOW_IT_WORKS.map((step) => (
               <View key={step.num} style={styles.howStep}>
                 <View style={styles.howNum}>
@@ -147,11 +156,9 @@ export default function CheckScreen() {
             ))}
           </View>
 
-          {/* Spacer for sticky button */}
           <View style={{ height: 20 }} />
         </ScrollView>
 
-        {/* Sticky CTA button */}
         <View style={styles.ctaContainer}>
           <TouchableOpacity
             style={[styles.ctaBtn, (!address.trim() || loading) && styles.ctaBtnDisabled]}
@@ -161,7 +168,7 @@ export default function CheckScreen() {
           >
             {loading
               ? <ActivityIndicator color="#fff" size="small" />
-              : <Text style={styles.ctaBtnText}>Analyze Address</Text>
+              : <Text style={styles.ctaBtnText}>{t('check.analyze')}</Text>
             }
           </TouchableOpacity>
         </View>
@@ -177,13 +184,8 @@ const styles = StyleSheet.create({
 
   hero: { alignItems: 'center', paddingVertical: 24, gap: 10 },
   heroIcon: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: '#1E3A5F',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 4,
+    width: 72, height: 72, borderRadius: 36,
+    backgroundColor: '#1E3A5F', alignItems: 'center', justifyContent: 'center', marginBottom: 4,
   },
   heroIconText: { fontSize: 32 },
   heroTitle: { fontSize: 26, fontWeight: '800', color: Colors.textPrimary, letterSpacing: -0.5 },
@@ -251,12 +253,8 @@ const styles = StyleSheet.create({
   },
   howStep: { flexDirection: 'row', alignItems: 'center', gap: 14 },
   howNum: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: Colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: 32, height: 32, borderRadius: 16,
+    backgroundColor: Colors.primary, alignItems: 'center', justifyContent: 'center',
   },
   howNumText: { fontSize: 14, fontWeight: '800', color: '#FFFFFF' },
   howText: { flex: 1, fontSize: 14, color: Colors.textSecondary, lineHeight: 20 },

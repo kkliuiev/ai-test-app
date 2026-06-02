@@ -3,10 +3,12 @@ import React, { useCallback, useState } from 'react';
 import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import HistoryCard from '../../components/HistoryCard';
 import { Colors } from '../../constants/colors';
+import { useTranslation } from '../../lib/i18n';
 import { clearHistory, getHistory, removeHistoryItem } from '../../services/historyService';
 import { HistoryItem } from '../../types';
 
 export default function HistoryScreen() {
+  const { t } = useTranslation();
   const [items, setItems] = useState<HistoryItem[]>([]);
 
   useFocusEffect(useCallback(() => { getHistory().then(setItems); }, []));
@@ -17,9 +19,9 @@ export default function HistoryScreen() {
   };
 
   const handleClearAll = () => {
-    Alert.alert('Clear History', 'Delete all check history?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Clear All', style: 'destructive', onPress: async () => { await clearHistory(); setItems([]); } },
+    Alert.alert(t('history.clearTitle'), t('history.clearMsg'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      { text: t('history.clearAll'), style: 'destructive', onPress: async () => { await clearHistory(); setItems([]); } },
     ]);
   };
 
@@ -29,10 +31,10 @@ export default function HistoryScreen() {
         <View style={styles.emptyIconWrap}>
           <Text style={styles.emptyEmoji}>📋</Text>
         </View>
-        <Text style={styles.emptyTitle}>No checks yet</Text>
-        <Text style={styles.emptySubtitle}>Your AML check history will appear here</Text>
+        <Text style={styles.emptyTitle}>{t('history.emptyTitle')}</Text>
+        <Text style={styles.emptySubtitle}>{t('history.emptySub')}</Text>
         <TouchableOpacity style={styles.goBtn} onPress={() => router.push('/check')} activeOpacity={0.8}>
-          <Text style={styles.goBtnText}>Check an Address</Text>
+          <Text style={styles.goBtnText}>{t('history.checkAddress')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -54,11 +56,11 @@ export default function HistoryScreen() {
         ListHeaderComponent={
           <View style={styles.listHeader}>
             <View>
-              <Text style={styles.listHeaderTitle}>Recent Checks</Text>
-              <Text style={styles.countText}>{items.length} addresses checked</Text>
+              <Text style={styles.listHeaderTitle}>{t('history.title')}</Text>
+              <Text style={styles.countText}>{t('history.count', { count: items.length })}</Text>
             </View>
             <TouchableOpacity onPress={handleClearAll} style={styles.clearBtn}>
-              <Text style={styles.clearText}>Clear All</Text>
+              <Text style={styles.clearText}>{t('history.clearAll')}</Text>
             </TouchableOpacity>
           </View>
         }
@@ -70,12 +72,7 @@ export default function HistoryScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
   list: { padding: 20, paddingBottom: 40 },
-  listHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
+  listHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
   listHeaderTitle: { fontSize: 18, fontWeight: '800', color: Colors.textPrimary, marginBottom: 2 },
   countText: { fontSize: 13, color: Colors.textSecondary },
   clearBtn: {
@@ -88,14 +85,7 @@ const styles = StyleSheet.create({
   },
   clearText: { fontSize: 13, color: Colors.critical, fontWeight: '600' },
 
-  empty: {
-    flex: 1,
-    backgroundColor: Colors.bg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 40,
-    gap: 12,
-  },
+  empty: { flex: 1, backgroundColor: Colors.bg, alignItems: 'center', justifyContent: 'center', padding: 40, gap: 12 },
   emptyIconWrap: {
     width: 80,
     height: 80,
@@ -114,13 +104,7 @@ const styles = StyleSheet.create({
   },
   emptyEmoji: { fontSize: 36 },
   emptyTitle: { fontSize: 22, color: Colors.textPrimary, fontWeight: '800' },
-  emptySubtitle: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 21,
-    maxWidth: 240,
-  },
+  emptySubtitle: { fontSize: 14, color: Colors.textSecondary, textAlign: 'center', lineHeight: 21, maxWidth: 240 },
   goBtn: {
     marginTop: 8,
     backgroundColor: Colors.primary,
