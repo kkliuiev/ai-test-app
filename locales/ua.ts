@@ -34,7 +34,7 @@ export const ua: Record<string, string> = {
   'home.newCheck': '🔍  Нова перевірка',
   'home.services': 'СЕРВІСИ',
   'home.bannerTitle': 'AML Перевірка ризику',
-  'home.bannerSub': '40+ джерел · 6 мереж',
+  'home.bannerSub': '40+ джерел · 7 мереж',
   'home.amlCheck': 'AML Перевірка',
   'home.amlCheckSub': 'Перевірити адресу',
   'home.history': 'Історія',
@@ -42,7 +42,7 @@ export const ua: Record<string, string> = {
   'home.about': 'Про додаток',
   'home.aboutSub': 'Гід по ризиках',
   'home.networks': 'Мережі',
-  'home.networksSub': '6 блокчейнів',
+  'home.networksSub': '7 блокчейнів',
   'home.guest': 'Гість',
 
   // Check
@@ -57,7 +57,7 @@ export const ua: Record<string, string> = {
   'check.step2': 'Оберіть блокчейн мережу',
   'check.step3': 'Миттєво отримайте оцінку ризику з 40+ джерел',
   'check.errorEmpty': 'Будь ласка, введіть крипто адресу',
-  'check.errorInvalid': 'Неправильний формат. EVM адреси починаються з 0x та 40 hex символів.',
+  'check.errorInvalid': 'Неправильний формат. Введіть EVM адресу (0x…) або Tron адресу (T…).',
   'check.errorFailed': 'Не вдалося перевірити адресу. Спробуйте ще раз.',
 
   // Result

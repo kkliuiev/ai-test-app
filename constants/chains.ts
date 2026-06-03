@@ -49,6 +49,14 @@ export const SUPPORTED_CHAINS: Chain[] = [
     color: '#FF0420',
     icon: '◎',
   },
+  {
+    id: 'tron',
+    chainId: 'tron',
+    name: 'Tron',
+    symbol: 'TRX',
+    color: '#EB0029',
+    icon: '◈',
+  },
 ];
 
 export const RISK_FACTOR_LABELS: Record<string, string> = {

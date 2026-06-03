@@ -1,6 +1,6 @@
 export interface Chain {
   id: string;
-  chainId: number;
+  chainId: number | string;
   name: string;
   symbol: string;
   color: string;

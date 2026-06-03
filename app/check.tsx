@@ -120,7 +120,7 @@ export default function CheckScreen() {
                 style={styles.input}
                 value={address}
                 onChangeText={(v) => { setAddress(v); setError(null); }}
-                placeholder="0x..."
+                placeholder="0x… or T…"
                 placeholderTextColor={Colors.textMuted}
                 autoCapitalize="none"
                 autoCorrect={false}

@@ -34,7 +34,7 @@ export const en: Record<string, string> = {
   'home.newCheck': '🔍  New Check',
   'home.services': 'SERVICES',
   'home.bannerTitle': 'AML Risk Check',
-  'home.bannerSub': '40+ sources · 6 chains',
+  'home.bannerSub': '40+ sources · 7 chains',
   'home.amlCheck': 'AML Check',
   'home.amlCheckSub': 'Screen any address',
   'home.history': 'History',
@@ -42,7 +42,7 @@ export const en: Record<string, string> = {
   'home.about': 'About',
   'home.aboutSub': 'Risk score guide',
   'home.networks': 'Networks',
-  'home.networksSub': '6 chains supported',
+  'home.networksSub': '7 chains supported',
   'home.guest': 'Guest',
 
   // Check
@@ -57,7 +57,7 @@ export const en: Record<string, string> = {
   'check.step2': 'Select the blockchain network',
   'check.step3': 'Instantly get a risk score from 40+ sources',
   'check.errorEmpty': 'Please enter a crypto address',
-  'check.errorInvalid': 'Invalid address format. EVM addresses start with 0x followed by 40 hex characters.',
+  'check.errorInvalid': 'Invalid address format. Enter an EVM address (0x…) or a Tron address (T…).',
   'check.errorFailed': 'Failed to check address. Please try again.',
 
   // Result

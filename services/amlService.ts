@@ -128,8 +128,15 @@ function scoreToLevel(score: number): RiskLevel {
 }
 
 export function isValidAddress(address: string): boolean {
+  // EVM (0x + 40 hex chars)
   if (/^0x[0-9a-fA-F]{40}$/.test(address)) return true;
-  return address.length >= 26 && address.length <= 62;
+  // Tron (T + 33 Base58 chars, total 34)
+  if (/^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(address)) return true;
+  return false;
+}
+
+export function isTronAddress(address: string): boolean {
+  return /^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(address);
 }
 
 export function truncateAddress(address: string, chars = 6): string {
